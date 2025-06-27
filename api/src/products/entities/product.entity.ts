@@ -9,7 +9,7 @@ export class Product {
   images: string[];
   mainImage: string;
   stock: number;
-  condition: 'new' | 'used' | 'refurbished';
+  condition: 'new' | 'used' ;
   category: string;
   brand?: string;
   model?: string;

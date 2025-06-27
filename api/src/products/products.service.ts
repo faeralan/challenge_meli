@@ -79,7 +79,7 @@ export class ProductsService {
     };
   }
 
-  async create(createProductDto: CreateProductDto): Promise<Product> {
+  async create(createProductDto: CreateProductDto, user: any): Promise<Product> {
     const products = await this.loadProducts();
     
     // Check if the ID already exists
@@ -92,8 +92,20 @@ export class ProductsService {
     const baseSlug = createProductDto.slug || this.generateSlug(createProductDto.title);
     const uniqueSlug = await this.ensureUniqueSlug(baseSlug);
 
+    // Create seller info from authenticated user
+    const seller = {
+      id: user.id,
+      name: user.name,
+      reputation: user.reputation,
+      location: user.location,
+      salesCount: user.salesCount,
+      joinDate: user.joinDate,
+      isVerified: user.isVerified,
+    };
+
     const newProduct: Product = {
       ...createProductDto,
+      seller,
       slug: uniqueSlug,
       createdAt: new Date(),
       updatedAt: new Date(),

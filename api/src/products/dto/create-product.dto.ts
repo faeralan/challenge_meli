@@ -1,6 +1,5 @@
 import { IsString, IsNumber, IsArray, IsBoolean, IsOptional, Min, Max, IsIn } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Seller } from '../entities/seller.entity';
 
 export class CreateProductDto {
   @ApiProperty({ example: 'MLA123456789' })
@@ -43,9 +42,9 @@ export class CreateProductDto {
   @Min(0)
   stock: number;
 
-  @ApiProperty({ example: 'new', enum: ['new', 'used', 'refurbished'] })
-  @IsIn(['new', 'used', 'refurbished'])
-  condition: 'new' | 'used' | 'refurbished';
+  @ApiProperty({ example: 'new', enum: ['new', 'used'] })
+  @IsIn(['new', 'used'])
+  condition: 'new' | 'used' ;
 
   @ApiProperty({ example: 'Electronics' })
   @IsString()
@@ -60,9 +59,6 @@ export class CreateProductDto {
   @IsOptional()
   @IsString()
   model?: string;
-
-  @ApiProperty({ type: Object })
-  seller: Seller;
 
   @ApiProperty({ example: 4.5 })
   @IsNumber()
