@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { PaymentMethod } from '../interfaces/payment-method.interface';
-import { Seller } from '../entities/seller.entity';
+import { SellerInfoDto } from '../../users/dto/seller-info.dto';
 
 export class ProductDetailDto {
   @ApiProperty({ example: 'MLA123456789' })
@@ -39,8 +39,8 @@ export class ProductDetailDto {
   @ApiProperty({ example: 'iPhone 14 Pro Max' })
   model?: string;
 
-  @ApiProperty({ type: Object })
-  seller: Seller;
+  @ApiProperty({ type: SellerInfoDto })
+  seller: SellerInfoDto; // Solo información pública del vendedor
 
   @ApiProperty({ example: 4.5 })
   rating: number;

@@ -1,4 +1,4 @@
-import { Seller } from './seller.entity';
+import { User } from '../../users/entities/user.entity';
 
 export class Product {
   id: string;
@@ -14,8 +14,8 @@ export class Product {
   brand?: string;
   model?: string;
   
-  // Seller information
-  seller: Seller;
+  // Seller information - ahora usa User directamente
+  seller: User;
   
   // Rating & Reviews
   rating: number; // Promedio de calificaciones

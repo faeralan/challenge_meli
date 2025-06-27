@@ -46,7 +46,9 @@ export class ProductsController {
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Update a product' })
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update a product (requires authentication)' })
   @ApiResponse({ status: 200, description: 'Product updated successfully' })
   @ApiResponse({ status: 404, description: 'Product not found' })
   async update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
@@ -54,10 +56,13 @@ export class ProductsController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete a product' })
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Delete a product (requires authentication)' })
   @ApiResponse({ status: 200, description: 'Product deleted successfully' })
   @ApiResponse({ status: 404, description: 'Product not found' })
   async remove(@Param('id') id: string) {
+    //TODO: Verify if the user is the owner of the product
     await this.productsService.remove(id);
     return { message: `Product with ID ${id} has been deleted` };
   }

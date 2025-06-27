@@ -2,7 +2,10 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductDetailDto } from './dto/product-detail.dto';
+import { SellerInfoDto } from '../users/dto/seller-info.dto';
 import { Product } from './entities/product.entity';
+import { User } from '../users/entities/user.entity';
+import { UsersService } from '../users/users.service';
 import { PAYMENT_METHODS } from './constants/payment-methods.constant';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -10,6 +13,8 @@ import * as path from 'path';
 @Injectable()
 export class ProductsService {
   private readonly dataPath = path.join(process.cwd(), 'data', 'products.json');
+
+  constructor(private readonly usersService: UsersService) {}
 
   private async loadProducts(): Promise<Product[]> {
     try {
@@ -67,6 +72,19 @@ export class ProductsService {
     return slug;
   }
 
+  // Método para proyectar User a información pública de vendedor
+  private mapUserToSellerInfo(user: User): SellerInfoDto {
+    return {
+      id: user.id,
+      name: user.name,
+      reputation: user.reputation,
+      location: user.location,
+      salesCount: user.salesCount,
+      joinDate: user.joinDate,
+      isVerified: user.isVerified,
+    };
+  }
+
   private mapToProductDetail(product: Product): ProductDetailDto {
     // Filter only enabled payment methods for this product
     const availablePaymentMethods = PAYMENT_METHODS.filter(
@@ -75,11 +93,12 @@ export class ProductsService {
 
     return {
       ...product,
+      seller: this.mapUserToSellerInfo(product.seller), // Proyección segura
       paymentMethods: availablePaymentMethods
     };
   }
 
-  async create(createProductDto: CreateProductDto, user: any): Promise<Product> {
+  async create(createProductDto: CreateProductDto, user: User): Promise<Product> {
     const products = await this.loadProducts();
     
     // Check if the ID already exists
@@ -92,20 +111,9 @@ export class ProductsService {
     const baseSlug = createProductDto.slug || this.generateSlug(createProductDto.title);
     const uniqueSlug = await this.ensureUniqueSlug(baseSlug);
 
-    // Create seller info from authenticated user
-    const seller = {
-      id: user.id,
-      name: user.name,
-      reputation: user.reputation,
-      location: user.location,
-      salesCount: user.salesCount,
-      joinDate: user.joinDate,
-      isVerified: user.isVerified,
-    };
-
     const newProduct: Product = {
       ...createProductDto,
-      seller,
+      seller: user, // Usamos el User completo directamente
       slug: uniqueSlug,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -113,6 +121,9 @@ export class ProductsService {
 
     products.push(newProduct);
     await this.saveProducts(products);
+    
+    // Increment salesCount of the seller
+    await this.usersService.incrementSalesCount(user.id);
     
     return newProduct;
   }
