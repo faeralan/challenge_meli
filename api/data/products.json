@@ -1,0 +1,105 @@
+[
+    {
+      "id": "MLA123456789",
+      "title": "iPhone 14 Pro Max 256GB Space Black",
+      "slug": "iphone-14-pro-max-256gb-space-black",
+      "description": "iPhone 14 Pro Max con 256GB de almacenamiento en color Space Black. Incluye pantalla Super Retina XDR de 6.7 pulgadas, sistema de cámaras Pro con teleobjetivo, ultra gran angular y gran angular. Procesador A16 Bionic. Resistente al agua y polvo IP68.",
+      "price": 850000,
+      "images": [
+        "https://images.example.com/iphone14-front.jpg",
+        "https://images.example.com/iphone14-back.jpg",
+        "https://images.example.com/iphone14-side.jpg",
+        "https://images.example.com/iphone14-box.jpg"
+      ],
+      "mainImage": "https://images.example.com/iphone14-front.jpg",
+      "stock": 15,
+      "condition": "new",
+      "category": "Electronics",
+      "brand": "Apple",
+      "model": "iPhone 14 Pro Max",
+      "seller": {
+        "id": "SELLER001",
+        "name": "TechStore Premium",
+        "reputation": 4.8,
+        "location": "Capital Federal, Buenos Aires",
+        "salesCount": 2847,
+        "joinDate": "2018-03-15T00:00:00.000Z",
+        "isVerified": true
+      },
+      "rating": 4.6,
+      "totalReviews": 247,
+      "enabledPaymentMethods": ["mercadopago", "credit_card", "debit_card", "bank_transfer"],
+      "freeShipping": true,
+      "warranty": "12 meses de garantía oficial Apple",
+      "createdAt": "2024-01-15T10:30:00.000Z",
+      "updatedAt": "2024-01-15T10:30:00.000Z"
+    },
+    {
+      "id": "MLA987654321",
+      "title": "Samsung Galaxy S23 Ultra 512GB Phantom Black",
+      "slug": "samsung-galaxy-s23-ultra-512gb-phantom-black",
+      "description": "Samsung Galaxy S23 Ultra con 512GB de almacenamiento interno y 12GB de RAM. Pantalla Dynamic AMOLED 2X de 6.8 pulgadas. Sistema de cámaras cuádruple con zoom óptico 10x. Procesador Snapdragon 8 Gen 2. Incluye S Pen integrado.",
+      "price": 720000,
+      "images": [
+        "https://images.example.com/galaxy-s23-front.jpg",
+        "https://images.example.com/galaxy-s23-back.jpg",
+        "https://images.example.com/galaxy-s23-spen.jpg"
+      ],
+      "mainImage": "https://images.example.com/galaxy-s23-front.jpg",
+      "stock": 8,
+      "condition": "new",
+      "category": "Electronics",
+      "brand": "Samsung",
+      "model": "Galaxy S23 Ultra",
+      "seller": {
+        "id": "SELLER002",
+        "name": "MobileWorld",
+        "reputation": 4.5,
+        "location": "Córdoba, Córdoba",
+        "salesCount": 1256,
+        "joinDate": "2019-07-22T00:00:00.000Z",
+        "isVerified": true
+      },
+      "rating": 4.4,
+      "totalReviews": 89,
+      "enabledPaymentMethods": ["mercadopago", "credit_card", "cash"],
+      "freeShipping": false,
+      "warranty": "24 meses de garantía oficial Samsung",
+      "createdAt": "2024-01-20T14:45:00.000Z",
+      "updatedAt": "2024-01-20T14:45:00.000Z"
+    },
+    {
+      "id": "MLA456789123",
+      "title": "MacBook Air M2 13 pulgadas 256GB Space Gray",
+      "slug": "macbook-air-m2-13-pulgadas-256gb-space-gray",
+      "description": "MacBook Air con chip M2 de Apple, pantalla Liquid Retina de 13.6 pulgadas, 8GB de memoria unificada y 256GB de almacenamiento SSD. Incluye cargador MagSafe, hasta 18 horas de duración de batería. Ideal para trabajo y estudio.",
+      "price": 1250000,
+      "images": [
+        "https://images.example.com/macbook-air-open.jpg",
+        "https://images.example.com/macbook-air-closed.jpg",
+        "https://images.example.com/macbook-air-profile.jpg"
+      ],
+      "mainImage": "https://images.example.com/macbook-air-open.jpg",
+      "stock": 3,
+      "condition": "new",
+      "category": "Computers",
+      "brand": "Apple",
+      "model": "MacBook Air M2",
+      "seller": {
+        "id": "SELLER003",
+        "name": "CompuCenter",
+        "reputation": 4.9,
+        "location": "Rosario, Santa Fe",
+        "salesCount": 845,
+        "joinDate": "2017-11-08T00:00:00.000Z",
+        "isVerified": true
+      },
+      "rating": 4.8,
+      "totalReviews": 156,
+      "enabledPaymentMethods": ["mercadopago", "credit_card", "bank_transfer"],
+      "freeShipping": true,
+      "warranty": "12 meses de garantía oficial Apple + 6 meses adicionales del vendedor",
+      "createdAt": "2024-01-25T09:15:00.000Z",
+      "updatedAt": "2024-01-25T09:15:00.000Z"
+    }
+  ] 
