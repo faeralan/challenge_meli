@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductDetailDto } from './dto/product-detail.dto';
@@ -59,7 +59,7 @@ export class ProductsService {
       .replace(/-+/g, '-'); // Replace multiple hyphens with single
   }
 
-  private async ensureUniqueSlug(baseSlug: string, excludeId?: string): Promise<string> {
+  private async checkUniqueSlug(baseSlug: string, excludeId?: string): Promise<string> {
     const products = await this.loadProducts();
     let slug = baseSlug;
     let counter = 1;
@@ -72,7 +72,7 @@ export class ProductsService {
     return slug;
   }
 
-  // Método para proyectar User a información pública de vendedor
+  // Methods to map the user to the seller info
   private mapUserToSellerInfo(user: User): SellerInfoDto {
     return {
       id: user.id,
@@ -93,7 +93,7 @@ export class ProductsService {
 
     return {
       ...product,
-      seller: this.mapUserToSellerInfo(product.seller), // Proyección segura
+      seller: this.mapUserToSellerInfo(product.seller),
       paymentMethods: availablePaymentMethods
     };
   }
@@ -109,11 +109,11 @@ export class ProductsService {
 
     // Generate slug if not provided
     const baseSlug = createProductDto.slug || this.generateSlug(createProductDto.title);
-    const uniqueSlug = await this.ensureUniqueSlug(baseSlug);
+    const uniqueSlug = await this.checkUniqueSlug(baseSlug);
 
     const newProduct: Product = {
       ...createProductDto,
-      seller: user, // Usamos el User completo directamente
+      seller: user,
       slug: uniqueSlug,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -135,7 +135,6 @@ export class ProductsService {
 
   async findOne(identifier: string): Promise<ProductDetailDto> {
     const products = await this.loadProducts();
-    // Search by ID first, then by slug
     const product = products.find(p => p.id === identifier || p.slug === identifier);
     
     if (!product) {
@@ -168,9 +167,9 @@ export class ProductsService {
     let updatedSlug = products[productIndex].slug;
     if (updateProductDto.title && updateProductDto.title !== products[productIndex].title) {
       const baseSlug = updateProductDto.slug || this.generateSlug(updateProductDto.title);
-      updatedSlug = await this.ensureUniqueSlug(baseSlug, id);
+      updatedSlug = await this.checkUniqueSlug(baseSlug, id);
     } else if (updateProductDto.slug) {
-      updatedSlug = await this.ensureUniqueSlug(updateProductDto.slug, id);
+      updatedSlug = await this.checkUniqueSlug(updateProductDto.slug, id);
     }
 
     const updatedProduct: Product = {
@@ -186,12 +185,19 @@ export class ProductsService {
     return updatedProduct;
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(id: string, userId: string): Promise<void> {
     const products = await this.loadProducts();
     const productIndex = products.findIndex(p => p.id === id);
     
     if (productIndex === -1) {
       throw new NotFoundException(`Product with ID ${id} not found`);
+    }
+
+    const product = products[productIndex];
+    
+    // Verify that the user is the owner of the product
+    if (product.seller.id !== userId) {
+      throw new ForbiddenException('You are not authorized to delete this product. Only the owner can delete it.');
     }
 
     products.splice(productIndex, 1);

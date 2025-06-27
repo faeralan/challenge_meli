@@ -60,12 +60,15 @@ export class UsersService {
     const users = await this.loadUsers();
     const hashedPassword = await bcrypt.hash(userData.password, 10);
     
+    // Generate random reputation between 1.0 and 5.0
+    const randomReputation = Math.round((Math.random() * 4 + 1) * 10) / 10;
+    
     const newUser: User = {
       id: `SELLER${String(users.length + 1).padStart(3, '0')}`,
       email: userData.email,
       password: hashedPassword,
       name: userData.name,
-      reputation: 0,
+      reputation: randomReputation,
       location: userData.location,
       salesCount: 0,
       joinDate: new Date(),
@@ -90,48 +93,6 @@ export class UsersService {
     return sellerInfo;
   }
 
-  // Método para actualizar información del usuario
-  async update(id: string, updateData: Partial<User>): Promise<User | null> {
-    const users = await this.loadUsers();
-    const userIndex = users.findIndex(user => user.id === id && user.isActive);
-    
-    if (userIndex === -1) {
-      return null;
-    }
-
-    // Si se está actualizando la contraseña, hashearla
-    if (updateData.password) {
-      updateData.password = await bcrypt.hash(updateData.password, 10);
-    }
-
-    const updatedUser: User = {
-      ...users[userIndex],
-      ...updateData,
-      updatedAt: new Date(),
-    };
-
-    users[userIndex] = updatedUser;
-    await this.saveUsers(users);
-    
-    return updatedUser;
-  }
-
-  // Método para desactivar usuario (soft delete)
-  async deactivate(id: string): Promise<boolean> {
-    const users = await this.loadUsers();
-    const userIndex = users.findIndex(user => user.id === id);
-    
-    if (userIndex === -1) {
-      return false;
-    }
-
-    users[userIndex].isActive = false;
-    users[userIndex].updatedAt = new Date();
-    await this.saveUsers(users);
-    
-    return true;
-  }
-
   // Método para obtener todos los usuarios activos (sin passwords)
   async findAllActive(): Promise<Omit<User, 'password'>[]> {
     const users = await this.loadUsers();
@@ -140,7 +101,7 @@ export class UsersService {
       .map(({ password, ...user }) => user);
   }
 
-  // Método para incrementar el contador de ventas
+  // Method to increment the sales count
   async incrementSalesCount(id: string): Promise<boolean> {
     const users = await this.loadUsers();
     const userIndex = users.findIndex(user => user.id === id && user.isActive);
@@ -150,22 +111,6 @@ export class UsersService {
     }
 
     users[userIndex].salesCount += 1;
-    users[userIndex].updatedAt = new Date();
-    await this.saveUsers(users);
-    
-    return true;
-  }
-
-  // Método para actualizar la reputación
-  async updateReputation(id: string, newReputation: number): Promise<boolean> {
-    const users = await this.loadUsers();
-    const userIndex = users.findIndex(user => user.id === id && user.isActive);
-    
-    if (userIndex === -1) {
-      return false;
-    }
-
-    users[userIndex].reputation = Math.max(0, Math.min(5, newReputation)); // Clamp between 0-5
     users[userIndex].updatedAt = new Date();
     await this.saveUsers(users);
     

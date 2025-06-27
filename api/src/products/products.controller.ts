@@ -61,9 +61,9 @@ export class ProductsController {
   @ApiOperation({ summary: 'Delete a product (requires authentication)' })
   @ApiResponse({ status: 200, description: 'Product deleted successfully' })
   @ApiResponse({ status: 404, description: 'Product not found' })
-  async remove(@Param('id') id: string) {
-    //TODO: Verify if the user is the owner of the product
-    await this.productsService.remove(id);
+  @ApiResponse({ status: 403, description: 'You are not the owner of this product' })
+  async remove(@Param('id') id: string, @CurrentUser() user: User) {
+    await this.productsService.remove(id, user.id);
     return { message: `Product with ID ${id} has been deleted` };
   }
 }
