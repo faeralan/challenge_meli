@@ -1,0 +1,32 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+rules:
+  - name: "Composable and Clean Components"
+    description: "Favor small, focused, and reusable components with clear separation of concerns."
+    when: creating:file
+    match: "**/*.tsx"
+    action: |
+      - Keep components focused and small.
+      - Destructure props and type them explicitly.
+      - Move logic to hooks when possible.
+
+  - name: "Custom Hooks Naming and Structure"
+    description: "Hooks should be reusable, typed, and live in `hooks/` directories."
+    when: creating:file
+    match: "**/use*.ts"
+    action: |
+      - Use clear names like `useCart`, `useAuth`.
+      - Return types must be explicit.
+      - Prefer colocating hooks in `src/hooks` or feature-specific folders.
+
+  - name: "Strict Typing for Props and Functions"
+    description: "Always type props and avoid `any`."
+    when: creating:file
+    match: "**/*.tsx"
+    action: |
+      - Use `type` or `interface` for props.
+      - Declare function return types.
+      - Avoid `any`. Prefer `unknown`, `never`, or generics.

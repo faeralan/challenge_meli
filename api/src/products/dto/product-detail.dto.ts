@@ -57,6 +57,21 @@ export class ProductDetailDto {
   @ApiProperty({ example: '12 meses de garantía oficial' })
   warranty?: string;
 
+  @ApiProperty({ 
+    example: ['Capacidad: 64 GB', 'Incluye 2 controles', 'Pantalla táctil'], 
+    required: false 
+  })
+  features?: string[];
+
+  @ApiProperty({ 
+    example: [
+      { name: 'Rojo', image: 'https://example.com/red.jpg' },
+      { name: 'Azul', image: 'https://example.com/blue.jpg' }
+    ], 
+    required: false 
+  })
+  availableColors?: { name: string; image: string; }[];
+
   @ApiProperty()
   createdAt: Date;
 

@@ -1,0 +1,38 @@
+{
+  "name": "challenge-meli-fullstack",
+  "version": "1.0.0",
+  "description": "Challenge MercadoLibre - Full Stack Application",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:api\" \"npm run dev:frontend\"",
+    "dev:api": "cd api && npm run start:dev",
+    "dev:frontend": "cd frontend && npm start",
+    "start": "concurrently \"npm run start:api\" \"npm run start:frontend\"",
+    "start:api": "cd api && npm run start:prod",
+    "start:frontend": "cd frontend && npm run build && serve -s build -l 3001",
+    "install:all": "npm install && cd api && npm install && cd ../frontend && npm install",
+    "test": "concurrently \"npm run test:api\" \"npm run test:frontend\"",
+    "test:api": "cd api && npm run test",
+    "test:frontend": "cd frontend && npm test -- --coverage --watchAll=false",
+    "test:api:cov": "cd api && npm run test:cov",
+    "build": "cd frontend && npm run build",
+    "clean": "rm -rf api/node_modules frontend/node_modules node_modules api/dist frontend/build"
+  },
+  "keywords": [
+    "mercadolibre",
+    "challenge",
+    "nestjs",
+    "react",
+    "typescript",
+    "fullstack"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "serve": "^14.2.1"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=7.0.0"
+  }
+} 

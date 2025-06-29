@@ -84,4 +84,24 @@ export class CreateProductDto {
   @IsOptional()
   @IsString()
   warranty?: string;
+
+  @ApiProperty({ 
+    example: ['Capacidad: 64 GB', 'Incluye 2 controles', 'Pantalla táctil'], 
+    required: false 
+  })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  features?: string[];
+
+  @ApiProperty({ 
+    example: [
+      { name: 'Rojo', image: 'https://example.com/red.jpg' },
+      { name: 'Azul', image: 'https://example.com/blue.jpg' }
+    ], 
+    required: false 
+  })
+  @IsOptional()
+  @IsArray()
+  availableColors?: { name: string; image: string; }[];
 }

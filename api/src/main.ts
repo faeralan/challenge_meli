@@ -6,6 +6,19 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // Configurar CORS para permitir peticiones desde el frontend
+  app.enableCors({
+    origin: [
+      'http://localhost:3001', // Frontend React
+      'http://localhost:3000', // Backup
+      'http://127.0.0.1:3001',
+      'http://127.0.0.1:3000'
+    ],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+    credentials: true,
+  });
+
   app.setGlobalPrefix('api');
 
   app.useGlobalPipes(
@@ -24,5 +37,6 @@ async function bootstrap() {
     SwaggerModule.setup('api', app, documentFactory);
     
   await app.listen(process.env.PORT ?? 3000);
+  console.log(`🚀 API corriendo en: http://localhost:${process.env.PORT ?? 3000}/api`);
 }
 bootstrap();
