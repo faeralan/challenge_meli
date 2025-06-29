@@ -37,6 +37,8 @@ export const Breadcrumb = styled.div`
   font-size: 14px;
   color: ${meliColors.lightGray};
   margin-bottom: 16px;
+  line-height: 1.4;
+  word-break: break-word;
   
   a {
     color: ${meliColors.blue};
@@ -264,9 +266,9 @@ export const ProductInfo = styled.div`
 `;
 
 export const ProductTitle = styled.h1`
-  font-size: 24px;
-  font-weight: 400;
-  color: #333;
+  font-size: 22px !important;
+  font-weight: 700;
+  color: rgba(0,0,0,.9);
   margin: 0;
   line-height: 1.2;
   display: none;
@@ -306,9 +308,8 @@ export const StyledStar = styled(Star)<{ filled: boolean }>`
 
 export const ReviewCount = styled.span`
   font-size: 13px;
-  color: ${meliColors.blue};
+  color: rgba(0,0,0,.55);
   cursor: pointer;
-  text-decoration: underline;
 
   &:hover {
     text-decoration: none;
@@ -322,7 +323,7 @@ export const PriceSection = styled.div`
 export const Price = styled.div`
   font-size: 36px;
   font-weight: 300;
-  color: #333;
+  color: rgba(0,0,0,.9);
   line-height: 1;
   margin-bottom: 8px;
 
@@ -354,6 +355,21 @@ export const DiscountBadge = styled.span`
   margin-left: 8px;
 `;
 
+export const BestSellerBadge = styled.span`
+  background-color: ${meliColors.orange};
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 2px;
+  display: inline-block;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+  width: fit-content;
+  white-space: nowrap;
+`;
+
 export const ColorsSection = styled.div`
   margin-bottom: 20px;
 `;
@@ -374,7 +390,7 @@ export const ColorOptions = styled.div`
 export const ColorOption = styled.div<{ isSelected: boolean }>`
   width: 40px;
   height: 40px;
-  border-radius: 50%;
+  border-radius: 6px;
   border: 3px solid ${props => props.isSelected ? meliColors.blue : meliColors.border};
   cursor: pointer;
   transition: border-color 0.2s ease;
@@ -487,30 +503,31 @@ export const QuantityDropdown = styled.div`
 `;
 
 export const QuantityButton = styled.button`
-  background: ${colors.white};
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
   font-size: 14px;
+  font-weight: 600;
+  color: ${meliColors.black};
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
-  transition: border-color 0.2s ease;
+  gap: 4px;
+  transition: opacity 0.2s ease;
 
   &:hover {
-    border-color: ${meliColors.blue};
+    opacity: 0.8;
   }
 
   &:focus {
     outline: none;
-    border-color: ${meliColors.blue};
   }
 `;
 
 export const DropdownArrow = styled.span`
   font-size: 12px;
-  color: ${meliColors.darkGray};
+  color: ${meliColors.black};
   transition: transform 0.2s ease;
   
   ${QuantityDropdown}[data-open="true"] & {

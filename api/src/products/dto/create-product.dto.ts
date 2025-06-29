@@ -2,10 +2,6 @@ import { IsString, IsNumber, IsArray, IsBoolean, IsOptional, Min, Max, IsIn } fr
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateProductDto {
-  @ApiProperty({ example: 'MLA123456789' })
-  @IsString()
-  id: string;
-
   @ApiProperty({ example: 'iPhone 14 Pro Max 256GB Space Black' })
   @IsString()
   title: string;

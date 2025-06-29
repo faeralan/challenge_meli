@@ -80,7 +80,10 @@ const ProductDetail: React.FC = () => {
   return (
     <ProductContainer>
       <ProductWrapper>
-        <ProductBreadcrumb />
+        <ProductBreadcrumb 
+          category={product.category} 
+          title={product.title}
+        />
 
         <MainProductCard>
           {/* Galería de Imágenes */}

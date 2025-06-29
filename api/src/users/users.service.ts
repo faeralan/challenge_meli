@@ -1,53 +1,21 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { User } from './entities/user.entity';
+import { IUserRepository } from './repositories/user.repository.interface';
 import * as bcrypt from 'bcryptjs';
-import * as fs from 'fs';
-import * as path from 'path';
 
 @Injectable()
 export class UsersService {
-  private readonly dataPath = path.join(process.cwd(), 'data', 'users.json');
-
-  private async loadUsers(): Promise<User[]> {
-    try {
-      if (!fs.existsSync(this.dataPath)) {
-        // Create directory and file if it doesn't exist
-        const dataDir = path.dirname(this.dataPath);
-        if (!fs.existsSync(dataDir)) {
-          fs.mkdirSync(dataDir, { recursive: true });
-        }
-        fs.writeFileSync(this.dataPath, JSON.stringify([], null, 2));
-        return [];
-      }
-
-      const data = fs.readFileSync(this.dataPath, 'utf8');
-      return JSON.parse(data);
-    } catch (error) {
-      throw new Error(`Error loading users: ${error.message}`);
-    }
-  }
-
-  private async saveUsers(users: User[]): Promise<void> {
-    try {
-      const dataDir = path.dirname(this.dataPath);
-      if (!fs.existsSync(dataDir)) {
-        fs.mkdirSync(dataDir, { recursive: true });
-      }
-      
-      fs.writeFileSync(this.dataPath, JSON.stringify(users, null, 2));
-    } catch (error) {
-      throw new Error(`Error saving users: ${error.message}`);
-    }
-  }
+  constructor(
+    @Inject('IUserRepository')
+    private readonly userRepository: IUserRepository
+  ) {}
 
   async findByEmail(email: string): Promise<User | undefined> {
-    const users = await this.loadUsers();
-    return users.find(user => user.email === email && user.isActive);
+    return await this.userRepository.findByEmail(email);
   }
 
   async findById(id: string): Promise<User | undefined> {
-    const users = await this.loadUsers();
-    return users.find(user => user.id === id && user.isActive);
+    return await this.userRepository.findById(id);
   }
 
   async create(userData: {
@@ -57,14 +25,17 @@ export class UsersService {
     location: string;
     isVerified?: boolean;
   }): Promise<User> {
-    const users = await this.loadUsers();
     const hashedPassword = await bcrypt.hash(userData.password, 10);
     
     // Generate random reputation between 1.0 and 5.0
     const randomReputation = Math.round((Math.random() * 4 + 1) * 10) / 10;
     
+    // Generate unique user ID
+    const allUsers = await this.userRepository.findAll();
+    const userIdNumber = allUsers.length + 1;
+    
     const newUser: User = {
-      id: `SELLER${String(users.length + 1).padStart(3, '0')}`,
+      id: `SELLER${String(userIdNumber).padStart(3, '0')}`,
       email: userData.email,
       password: hashedPassword,
       name: userData.name,
@@ -78,10 +49,7 @@ export class UsersService {
       updatedAt: new Date(),
     };
 
-    users.push(newUser);
-    await this.saveUsers(users);
-    
-    return newUser;
+    return await this.userRepository.create(newUser);
   }
 
   // Método para obtener información del seller (sin password)
@@ -95,25 +63,11 @@ export class UsersService {
 
   // Método para obtener todos los usuarios activos (sin passwords)
   async findAllActive(): Promise<Omit<User, 'password'>[]> {
-    const users = await this.loadUsers();
-    return users
-      .filter(user => user.isActive)
-      .map(({ password, ...user }) => user);
+    return await this.userRepository.findActiveUsers();
   }
 
   // Method to increment the sales count
   async incrementSalesCount(id: string): Promise<boolean> {
-    const users = await this.loadUsers();
-    const userIndex = users.findIndex(user => user.id === id && user.isActive);
-    
-    if (userIndex === -1) {
-      return false;
-    }
-
-    users[userIndex].salesCount += 1;
-    users[userIndex].updatedAt = new Date();
-    await this.saveUsers(users);
-    
-    return true;
+    return await this.userRepository.incrementSalesCount(id);
   }
 } 

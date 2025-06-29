@@ -27,6 +27,8 @@ export class Product {
   // Additional info
   freeShipping: boolean;
   warranty?: string;
+  features?: string[];
+  availableColors?: { name: string; image: string; }[];
   createdAt: Date;
   updatedAt: Date;
 }

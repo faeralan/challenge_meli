@@ -12,6 +12,7 @@ import {
   Price,
   InstallmentInfo,
   DiscountBadge,
+  BestSellerBadge,
   ColorsSection,
   ColorsTitle,
   ColorOptions,
@@ -64,30 +65,43 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
     ));
   };
 
+  // Función para determinar si es best seller
+  const isBestSeller = (totalReviews: number, rating: number): boolean => {
+    return totalReviews >= 100 && rating >= 4.3;
+  };
+
   return (
     <ProductInfoWrapper>
+      
       <ProductCondition>
         {getConditionText(condition)} | +{salesCount} vendidos
       </ProductCondition>
 
+      {isBestSeller(totalReviews, rating) && (
+        <BestSellerBadge>MAS VENDIDO</BestSellerBadge>
+      )}
+
       <ProductTitle>{title}</ProductTitle>
 
       <ReviewsSection>
+        <ReviewCount>
+          {rating.toFixed(1)}
+        </ReviewCount>
         <StarsContainer>
           {renderStars(rating)}
         </StarsContainer>
         <ReviewCount>
-          {rating.toFixed(1)} ({totalReviews})
+          ({totalReviews})
         </ReviewCount>
       </ReviewsSection>
 
       <PriceSection>
         <Price>
           {formatPrice(price)}
-          <DiscountBadge>25% OFF</DiscountBadge>
+          {/* <DiscountBadge>25% OFF</DiscountBadge> */}
         </Price>
         <InstallmentInfo>
-          Mismo precio en 12 cuotas de {formatPrice(installmentPrice)}
+          en 12 cuotas de {formatPrice(installmentPrice)} sin interés
         </InstallmentInfo>
       </PriceSection>
 
