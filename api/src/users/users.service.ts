@@ -27,23 +27,16 @@ export class UsersService {
   }): Promise<User> {
     const hashedPassword = await bcrypt.hash(userData.password, 10);
     
-    // Generate random reputation between 1.0 and 5.0
-    const randomReputation = Math.round((Math.random() * 4 + 1) * 10) / 10;
-    
-    // Generate unique user ID
-    const allUsers = await this.userRepository.findAll();
-    const userIdNumber = allUsers.length + 1;
-    
     const newUser: User = {
-      id: `SELLER${String(userIdNumber).padStart(3, '0')}`,
+      id: `USER${Date.now()}${Math.random().toString(36).substr(2, 9)}`,
       email: userData.email,
       password: hashedPassword,
       name: userData.name,
-      reputation: randomReputation,
+      reputation: 4.5,
       location: userData.location,
       salesCount: 0,
       joinDate: new Date(),
-      isVerified: userData.isVerified || false,
+      isVerified: userData.isVerified ?? false,
       isActive: true,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -52,21 +45,6 @@ export class UsersService {
     return await this.userRepository.create(newUser);
   }
 
-  // Método para obtener información del seller (sin password)
-  async getSellerInfo(id: string) {
-    const user = await this.findById(id);
-    if (!user) return null;
-
-    const { password, ...sellerInfo } = user;
-    return sellerInfo;
-  }
-
-  // Método para obtener todos los usuarios activos (sin passwords)
-  async findAllActive(): Promise<Omit<User, 'password'>[]> {
-    return await this.userRepository.findActiveUsers();
-  }
-
-  // Method to increment the sales count
   async incrementSalesCount(id: string): Promise<boolean> {
     return await this.userRepository.incrementSalesCount(id);
   }

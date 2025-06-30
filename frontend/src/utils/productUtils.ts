@@ -29,6 +29,7 @@ export const getConditionText = (condition: string): string => {
 };
 
 export const getDiscountPercentage = (originalPrice: number, currentPrice: number): number => {
+  if (originalPrice === 0) return NaN;
   return Math.round(((originalPrice - currentPrice) / originalPrice) * 100);
 };
 

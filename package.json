@@ -14,6 +14,9 @@
     "test:api": "cd api && npm run test",
     "test:frontend": "cd frontend && npm test -- --coverage --watchAll=false",
     "test:api:cov": "cd api && npm run test:cov",
+    "test:api:e2e": "cd api && npm run test:e2e",
+    "test:api:e2e:cov": "cd api && npm run test:e2e:cov",
+    "test:api:watch": "cd api && npm run test:watch",
     "build": "cd frontend && npm run build",
     "clean": "rm -rf api/node_modules frontend/node_modules node_modules api/dist frontend/build"
   },

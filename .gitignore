@@ -3,6 +3,7 @@
 /api/node_modules
 /node_modules
 /api/build
+/api/data
 
 # Logs
 logs

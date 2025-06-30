@@ -1,14 +1,15 @@
 import { Injectable, NotFoundException, ConflictException, InternalServerErrorException } from '@nestjs/common';
-import { IQueryableRepository } from './repository.interface';
+import { IRepository } from './repository.interface';
 import * as fs from 'fs';
 import * as path from 'path';
 
 @Injectable()
-export abstract class BaseJsonRepository<T extends { id: string }> implements IQueryableRepository<T> {
+export abstract class BaseJsonRepository<T extends { id: string }> implements IRepository<T> {
   protected abstract readonly fileName: string;
   
   protected get filePath(): string {
-    return path.join(process.cwd(), 'data', this.fileName);
+    const dataDir = process.env.DATA_DIR || path.join(process.cwd(), 'data');
+    return path.join(dataDir, this.fileName);
   }
 
   protected async loadData(): Promise<T[]> {
@@ -49,16 +50,6 @@ export abstract class BaseJsonRepository<T extends { id: string }> implements IQ
   async findById(id: string): Promise<T | null> {
     const items = await this.loadData();
     return items.find(item => item.id === id) || null;
-  }
-
-  async findBy(criteria: Partial<T>): Promise<T[]> {
-    const items = await this.loadData();
-    return items.filter(item => this.matchesCriteria(item, criteria));
-  }
-
-  async findOneBy(criteria: Partial<T>): Promise<T | null> {
-    const items = await this.loadData();
-    return items.find(item => this.matchesCriteria(item, criteria)) || null;
   }
 
   async create(entity: T): Promise<T> {
@@ -113,26 +104,5 @@ export abstract class BaseJsonRepository<T extends { id: string }> implements IQ
     await this.saveData(items);
     
     return true;
-  }
-
-  async exists(id: string): Promise<boolean> {
-    const item = await this.findById(id);
-    return item !== null;
-  }
-
-  protected matchesCriteria(item: T, criteria: Partial<T>): boolean {
-    return Object.keys(criteria).every(key => {
-      const criteriaValue = criteria[key as keyof T];
-      const itemValue = item[key as keyof T];
-      
-      if (criteriaValue === undefined) return true;
-      
-      // Handle nested object comparison if needed
-      if (typeof criteriaValue === 'object' && typeof itemValue === 'object') {
-        return JSON.stringify(criteriaValue) === JSON.stringify(itemValue);
-      }
-      
-      return itemValue === criteriaValue;
-    });
   }
 } 

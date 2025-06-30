@@ -84,17 +84,7 @@ export class ProductsService {
     const product = await this.productRepository.findByIdOrSlug(identifier);
     
     if (!product) {
-      throw new NotFoundException(`Product with ID or slug '${identifier}' not found`);
-    }
-
-    return this.mapToProductDetail(product);
-  }
-
-  async findBySlug(slug: string): Promise<ProductDetailDto> {
-    const product = await this.productRepository.findBySlug(slug);
-    
-    if (!product) {
-      throw new NotFoundException(`Product with slug '${slug}' not found`);
+      throw new NotFoundException(`Product with identifier '${identifier}' not found`);
     }
 
     return this.mapToProductDetail(product);

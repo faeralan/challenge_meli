@@ -1,8 +1,7 @@
-import { IQueryableRepository } from '../../common/repositories/repository.interface';
+import { IRepository } from '../../common/repositories/repository.interface';
 import { User } from '../entities/user.entity';
 
-export interface IUserRepository extends IQueryableRepository<User> {
+export interface IUserRepository extends IRepository<User> {
   findByEmail(email: string): Promise<User | null>;
-  findActiveUsers(): Promise<Omit<User, 'password'>[]>;
   incrementSalesCount(id: string): Promise<boolean>;
 } 

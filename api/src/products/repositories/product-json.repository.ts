@@ -42,14 +42,7 @@ export class ProductJsonRepository extends BaseJsonRepository<Product> implement
 
   async isSlugUnique(slug: string, excludeId?: string): Promise<boolean> {
     const products = await this.loadData();
-    return !products.some(product => 
-      product.slug === slug && product.id !== excludeId
-    );
-  }
-
-  async findBySellerId(sellerId: string): Promise<Product[]> {
-    const products = await this.loadData();
-    return products.filter(product => product.seller.id === sellerId);
+    return !products.some(product => product.slug === slug && product.id !== excludeId);
   }
 
   // Helper method to generate unique slug

@@ -9,14 +9,7 @@ export class UserJsonRepository extends BaseJsonRepository<User> implements IUse
 
   async findByEmail(email: string): Promise<User | null> {
     const users = await this.loadData();
-    return users.find(user => user.email === email && user.isActive) || null;
-  }
-
-  async findActiveUsers(): Promise<Omit<User, 'password'>[]> {
-    const users = await this.loadData();
-    return users
-      .filter(user => user.isActive)
-      .map(({ password, ...user }) => user);
+    return users.find(user => user.email === email) || null;
   }
 
   async incrementSalesCount(id: string): Promise<boolean> {

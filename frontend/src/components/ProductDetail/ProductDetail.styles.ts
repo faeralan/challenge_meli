@@ -161,7 +161,9 @@ export const ThumbnailList = styled.div`
   }
 `;
 
-export const Thumbnail = styled.img<{ isActive: boolean }>`
+export const Thumbnail = styled.img.withConfig({
+  shouldForwardProp: (prop) => prop !== 'isActive',
+})<{ isActive: boolean }>`
   width: 50px;
   height: 50px;
   object-fit: contain;
@@ -535,7 +537,9 @@ export const DropdownArrow = styled.span`
   }
 `;
 
-export const QuantityOptions = styled.div<{ isOpen: boolean }>`
+export const QuantityOptions = styled.div.withConfig({
+  shouldForwardProp: (prop) => prop !== 'isOpen',
+})<{ isOpen: boolean }>`
   position: absolute;
   top: 100%;
   left: 0;

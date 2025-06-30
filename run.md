@@ -50,10 +50,39 @@ cd frontend
 npm start
 ```
 
-## Verify Functionality
+### API Testing Commands
 
-1. **Backend**: Visit http://localhost:3000/api to see Swagger documentation
-2. **Frontend**: Visit http://localhost:3001 to see the React application
+```bash
+# 🎯 E2E Tests (Recommended - Main test suite)
+npm run test:api:e2e           # E2E tests with detailed output
+npm run test:api:e2e:cov       # E2E tests with coverage report
+
+# ⚡ Unit Tests  
+npm run test:api               # Quick unit tests
+npm run test:api:cov           # Unit tests with coverage
+
+# 🔄 Development
+npm run test:api:watch         # Tests in watch mode (re-run on changes)
+
+# 🎯 All Tests
+npm run test                   # Run all tests (API + Frontend)
+npm run test:frontend          # Frontend tests only
+```
+
+### Frontend Testing Commands
+
+```bash
+# 🧪 All Tests (Recommended)
+npm run test:frontend          # All frontend tests with watch mode
+npm test                       # Quick execution (from frontend/)
+
+# 🎯 Specific Test Execution
+npm test ComponentName.test.tsx -- --watchAll=false     # Single test file
+npm test src/components/__tests__/ -- --watchAll=false  # Component tests only
+npm test src/hooks/__tests__/ -- --watchAll=false       # Hook tests only
+npm test src/utils/__tests__/ -- --watchAll=false       # Utility tests only
+
+```
 
 
 ## Important URLs
@@ -62,38 +91,3 @@ npm start
 - **Backend API**: http://localhost:3000/api
 - **API Documentation**: http://localhost:3000/api
 - **Sample Product Page**: http://localhost:3001/product/MLA123456789
-
-
-## Available Commands
-
-With the configured `package.json`, you have these useful commands:
-
-```bash
-# Development (recommended)
-npm run dev                    # Run frontend + backend in development mode
-
-# Installation
-npm run install:all           # Install dependencies for entire project
-
-# Testing  
-npm run test                  # Run tests for frontend + backend
-npm run test:api:cov          # Backend tests with coverage
-
-# Production
-npm run build                 # Build frontend for production
-npm run start                 # Run everything in production mode
-
-# Cleanup
-npm run clean                 # Clean all node_modules and builds
-```
-
-## Individual Scripts
-
-If you prefer to run projects separately:
-
-```bash
-npm run dev:api               # Backend only in development
-npm run dev:frontend          # Frontend only in development
-npm run test:api              # Backend tests only
-npm run test:frontend         # Frontend tests only
-```
