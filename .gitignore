@@ -4,6 +4,8 @@
 /node_modules
 /api/build
 /api/data
+/api/data/*
+/api/data/**/*
 
 # Logs
 logs

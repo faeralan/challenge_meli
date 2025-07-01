@@ -2,9 +2,11 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   // Configurar CORS para permitir peticiones desde el frontend
   app.enableCors({
@@ -28,6 +30,11 @@ async function bootstrap() {
     })
    );
 
+   // Configurar archivos estáticos para las imágenes
+   app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+     prefix: '/uploads/',
+   });
+
    const config = new DocumentBuilder()
       .setTitle('Product API')
       .setDescription('Product API RESTful')
@@ -37,6 +44,6 @@ async function bootstrap() {
     SwaggerModule.setup('api', app, documentFactory);
     
   await app.listen(process.env.PORT ?? 3000);
-  console.log(`🚀 API corriendo en: http://localhost:${process.env.PORT ?? 3000}/api`);
+  console.log(`🚀 API running on: http://localhost:${process.env.PORT ?? 3000}/api`);
 }
 bootstrap();

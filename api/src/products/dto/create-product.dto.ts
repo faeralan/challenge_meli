@@ -1,5 +1,6 @@
 import { IsString, IsNumber, IsArray, IsBoolean, IsOptional, Min, Max, IsIn } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform, Type } from 'class-transformer';
 
 export class CreateProductDto {
   @ApiProperty({ example: 'iPhone 14 Pro Max 256GB Space Black' })
@@ -20,20 +21,46 @@ export class CreateProductDto {
   description: string;
 
   @ApiProperty({ example: 850000 })
+  @Transform(({ value }) => typeof value === 'string' ? parseFloat(value) : value)
+  @Type(() => Number)
   @IsNumber()
   @Min(0)
   price: number;
 
-  @ApiProperty({ example: ['image1.jpg', 'image2.jpg'] })
+  @ApiProperty({ 
+    example: ['image1.jpg', 'image2.jpg'], 
+    description: 'Array de nombres de imágenes. Si se suben archivos, este campo es opcional',
+    required: false
+  })
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (!value) return undefined;
+    if (typeof value === 'string') {
+      // Si viene como string separado por comas
+      return value.split(',').map(v => v.trim()).filter(v => v.length > 0);
+    }
+    if (Array.isArray(value)) {
+      return value;
+    }
+    // Si viene como un solo valor
+    return [value];
+  })
   @IsArray()
   @IsString({ each: true })
-  images: string[];
+  images?: string[];
 
-  @ApiProperty({ example: 'image1.jpg' })
+  @ApiProperty({ 
+    example: 'image1.jpg',
+    description: 'Imagen principal del producto. Si se suben archivos, este campo es opcional',
+    required: false
+  })
+  @IsOptional()
   @IsString()
-  mainImage: string;
+  mainImage?: string;
 
   @ApiProperty({ example: 10 })
+  @Transform(({ value }) => typeof value === 'string' ? parseInt(value, 10) : value)
+  @Type(() => Number)
   @IsNumber()
   @Min(0)
   stock: number;
@@ -57,22 +84,43 @@ export class CreateProductDto {
   model?: string;
 
   @ApiProperty({ example: 4.5 })
+  @Transform(({ value }) => typeof value === 'string' ? parseFloat(value) : value)
+  @Type(() => Number)
   @IsNumber()
   @Min(0)
   @Max(5)
   rating: number;
 
   @ApiProperty({ example: 150 })
+  @Transform(({ value }) => typeof value === 'string' ? parseInt(value, 10) : value)
+  @Type(() => Number)
   @IsNumber()
   @Min(0)
   totalReviews: number;
 
   @ApiProperty({ example: ['mercadopago', 'credit_card', 'debit_card'] })
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      // Si viene como string separado por comas
+      return value.split(',').map(v => v.trim());
+    }
+    if (Array.isArray(value)) {
+      return value;
+    }
+    // Si viene como un solo valor
+    return [value];
+  })
   @IsArray()
   @IsString({ each: true })
   enabledPaymentMethods: string[];
 
   @ApiProperty({ example: true })
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      return value.toLowerCase() === 'true' || value === '1';
+    }
+    return Boolean(value);
+  })
   @IsBoolean()
   freeShipping: boolean;
 
@@ -86,6 +134,18 @@ export class CreateProductDto {
     required: false 
   })
   @IsOptional()
+  @Transform(({ value }) => {
+    if (!value) return undefined;
+    if (typeof value === 'string') {
+      // Si viene como string separado por comas
+      return value.split(',').map(v => v.trim()).filter(v => v.length > 0);
+    }
+    if (Array.isArray(value)) {
+      return value;
+    }
+    // Si viene como un solo valor
+    return [value];
+  })
   @IsArray()
   @IsString({ each: true })
   features?: string[];
@@ -98,6 +158,19 @@ export class CreateProductDto {
     required: false 
   })
   @IsOptional()
+  @Transform(({ value }) => {
+    if (!value) return undefined;
+    if (typeof value === 'string') {
+      try {
+        // Si viene como JSON string
+        return JSON.parse(value);
+      } catch {
+        // Si no es JSON válido, retornar undefined
+        return undefined;
+      }
+    }
+    return value;
+  })
   @IsArray()
   availableColors?: { name: string; image: string; }[];
 }
