@@ -8,7 +8,10 @@ import { join } from 'path';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  // Configurar CORS para permitir peticiones desde el frontend
+  // Enable graceful shutdown
+  app.enableShutdownHooks();
+
+  // Configure CORS to allow requests from frontend
   app.enableCors({
     origin: [
       'http://localhost:3001', // Frontend React
@@ -30,7 +33,7 @@ async function bootstrap() {
     })
    );
 
-   // Configurar archivos estáticos para las imágenes
+   // Configure static files for images
    app.useStaticAssets(join(__dirname, '..', 'uploads'), {
      prefix: '/uploads/',
    });
@@ -45,5 +48,21 @@ async function bootstrap() {
     
   await app.listen(process.env.PORT ?? 3000);
   console.log(`🚀 API running on: http://localhost:${process.env.PORT ?? 3000}/api`);
+
+  // Graceful shutdown
+  const gracefulShutdown = (signal: string) => {
+    console.log(`\n🔄 Received ${signal}. Starting graceful shutdown...`);
+    app.close().then(() => {
+      console.log('✅ Application closed gracefully');
+      process.exit(0);
+    }).catch((error) => {
+      console.error('❌ Error during shutdown:', error);
+      process.exit(1);
+    });
+  };
+
+  // Escuchar señales de terminación
+  process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+  process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 }
 bootstrap();

@@ -1,4 +1,5 @@
 import { User } from '../../users/entities/user.entity';
+import { Warranty } from '../interfaces/warranty.interface';
 
 export class Product {
   id: string;
@@ -14,19 +15,19 @@ export class Product {
   brand?: string;
   model?: string;
   
-  // Seller information - ahora usa User directamente
+  // Seller information - now uses User directly
   seller: User;
   
   // Rating & Reviews
-  rating: number; // Promedio de calificaciones
+  rating: number; // Average rating
   totalReviews: number;
   
-  // Payment methods (array de IDs habilitados)
+  // Payment methods (array of enabled IDs)
   enabledPaymentMethods: string[];
   
   // Additional info
   freeShipping: boolean;
-  warranty?: string;
+  warranty?: Warranty;
   features?: string[];
   availableColors?: { name: string; image: string; }[];
   createdAt: Date;

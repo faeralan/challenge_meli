@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Container, LoadingSpinner, ErrorMessage } from '../styles/GlobalStyles';
 
-// Hooks personalizados
+// Custom hooks
 import { useProductDetail, useImageGallery, useQuantityDropdown } from '../hooks/useProductDetail';
 import { useProductActions } from '../hooks/useProductActions';
 
-// Componentes modulares
+// Modular components
 import {
   ImageGallery,
   ProductInfo,
@@ -15,7 +15,7 @@ import {
   ProductBreadcrumb
 } from '../components/ProductDetail';
 
-// Estilos organizados
+// Organized styles
 import {
   ProductContainer,
   ProductWrapper,
@@ -25,7 +25,7 @@ import {
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   
-  // Hooks personalizados para separar la lógica
+  // Custom hooks to separate logic
   const { product, loading, error } = useProductDetail(id);
   const {
     selectedImageIndex,
@@ -43,16 +43,16 @@ const ProductDetail: React.FC = () => {
     selectQuantity
   } = useQuantityDropdown(product?.stock || 1);
   
-  // Estado local para componentes específicos
+  // Local state for specific components
   const [selectedColor, setSelectedColor] = useState(0);
 
-  // Acciones del producto
+  // Product actions
   const { handleBuyNow, handleAddToCart } = useProductActions({
     product,
     quantity
   });
 
-  // Estados de carga y error
+  // Loading and error states
   if (loading) {
     return (
       <ProductContainer>

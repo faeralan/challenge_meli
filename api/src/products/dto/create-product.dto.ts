@@ -1,6 +1,8 @@
-import { IsString, IsNumber, IsArray, IsBoolean, IsOptional, Min, Max, IsIn } from 'class-validator';
+import { IsString, IsNumber, IsArray, IsBoolean, IsOptional, Min, Max, IsIn, ValidateNested, ValidateIf, Validate, ValidatorConstraint, ValidatorConstraintInterface, ValidationArguments } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
+import { VALID_PAYMENT_METHOD_IDS } from '../constants/payment-methods.constant';
+import { WarrantyDto } from './warranty.dto';
 
 export class CreateProductDto {
   @ApiProperty({ example: 'iPhone 14 Pro Max 256GB Space Black' })
@@ -29,20 +31,20 @@ export class CreateProductDto {
 
   @ApiProperty({ 
     example: ['image1.jpg', 'image2.jpg'], 
-    description: 'Array de nombres de imágenes. Si se suben archivos, este campo es opcional',
+    description: 'Array of image names. If files are uploaded, this field is optional',
     required: false
   })
   @IsOptional()
   @Transform(({ value }) => {
     if (!value) return undefined;
     if (typeof value === 'string') {
-      // Si viene como string separado por comas
+      // If it comes as a comma-separated string
       return value.split(',').map(v => v.trim()).filter(v => v.length > 0);
     }
     if (Array.isArray(value)) {
       return value;
     }
-    // Si viene como un solo valor
+    // If it comes as a single value
     return [value];
   })
   @IsArray()
@@ -51,7 +53,7 @@ export class CreateProductDto {
 
   @ApiProperty({ 
     example: 'image1.jpg',
-    description: 'Imagen principal del producto. Si se suben archivos, este campo es opcional',
+    description: 'Main product image. If files are uploaded, this field is optional',
     required: false
   })
   @IsOptional()
@@ -98,7 +100,11 @@ export class CreateProductDto {
   @Min(0)
   totalReviews: number;
 
-  @ApiProperty({ example: ['mercadopago', 'credit_card', 'debit_card'] })
+  @ApiProperty({ 
+    example: ['mercadopago', 'visa_credit', 'visa_debit', 'mastercard_credit', 'mastercard_debit', 'pagofacil'],
+    enum: VALID_PAYMENT_METHOD_IDS,
+    description: 'Métodos de pago habilitados. Solo se permiten los valores: mercadopago, visa_credit, visa_debit, mastercard_credit, mastercard_debit, pagofacil'
+  })
   @Transform(({ value }) => {
     if (typeof value === 'string') {
       // Si viene como string separado por comas
@@ -112,6 +118,7 @@ export class CreateProductDto {
   })
   @IsArray()
   @IsString({ each: true })
+  @IsIn(VALID_PAYMENT_METHOD_IDS, { each: true })
   enabledPaymentMethods: string[];
 
   @ApiProperty({ example: true })
@@ -124,10 +131,30 @@ export class CreateProductDto {
   @IsBoolean()
   freeShipping: boolean;
 
-  @ApiProperty({ example: '12 meses de garantía oficial', required: false })
+  @ApiProperty({ 
+    example: { status: true, value: '12 meses de garantía oficial' },
+    description: 'Información de garantía del producto',
+    required: false,
+    type: WarrantyDto
+  })
   @IsOptional()
-  @IsString()
-  warranty?: string;
+  @ValidateNested()
+  @Type(() => WarrantyDto)
+  @Transform(({ value }) => {
+    if (value === undefined || value === null || value === '') return undefined;
+    if (typeof value === 'string') {
+      try {
+        return JSON.parse(value);
+      } catch {
+        return undefined;
+      }
+    }
+    if (typeof value === 'object') {
+      return value;
+    }
+    return undefined;
+  })
+  warranty?: WarrantyDto;
 
   @ApiProperty({ 
     example: ['Capacidad: 64 GB', 'Incluye 2 controles', 'Pantalla táctil'], 

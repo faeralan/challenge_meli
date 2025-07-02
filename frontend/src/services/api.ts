@@ -15,7 +15,7 @@ class ApiService {
     });
   }
 
-  // Productos
+  // Products
   async getProducts(): Promise<Product[]> {
     const response: AxiosResponse<Product[]> = await this.api.get('/products');
     return response.data;
@@ -45,7 +45,7 @@ class ApiService {
     await this.api.delete(`/products/${id}`);
   }
 
-  // Métodos de pago
+  // Payment methods
   async getPaymentMethods(): Promise<PaymentMethod[]> {
     const response: AxiosResponse<PaymentMethod[]> = await this.api.get('/products/payment-methods');
     return response.data;

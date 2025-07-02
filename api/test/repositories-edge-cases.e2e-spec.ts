@@ -46,7 +46,7 @@ describe('Repository Edge Cases and Error Handling (e2e)', () => {
     
     await app.init();
 
-    // Registrar usuario para tests
+    // Register user for tests
     const registerResponse = await request(app.getHttpServer())
       .post('/auth/register')
       .send(testUser)
@@ -108,14 +108,14 @@ describe('Repository Edge Cases and Error Handling (e2e)', () => {
           title: 'Complex Match Test 1',
           features: ['Feature A', 'Feature B'],
           availableColors: [{ name: 'Red', image: 'red.jpg' }],
-          warranty: 'Complex warranty text'
+          warranty: { status: true, value: 'Complex warranty text' }
         },
         {
           ...testProduct,
           title: 'Complex Match Test 2',
           features: ['Feature A', 'Feature C'],
           availableColors: [{ name: 'Blue', image: 'blue.jpg' }],
-          warranty: null
+          warranty: undefined
         }
       ];
 
@@ -269,7 +269,7 @@ describe('Repository Edge Cases and Error Handling (e2e)', () => {
         .expect(res => {
           expect(res.body.user.email).toBe(newUser.email);
           expect(res.body.user).not.toHaveProperty('password');
-          // isActive no se incluye en la respuesta del login, pero se crea como true por defecto
+          // isActive is not included in login response, but is created as true by default
         });
     });
 
@@ -311,7 +311,7 @@ describe('Repository Edge Cases and Error Handling (e2e)', () => {
         .send({
           ...testProduct,
           title: 'Mapping Test Product',
-          enabledPaymentMethods: ['mercadopago', 'credit_card', 'debit_card'],
+          enabledPaymentMethods: ['mercadopago', 'visa_credit', 'visa_debit'],
           features: ['Complex Feature 1', 'Complex Feature 2'],
           availableColors: [
             { name: 'Red', image: 'red.jpg' },
@@ -335,8 +335,9 @@ describe('Repository Edge Cases and Error Handling (e2e)', () => {
     });
 
     it('should force path coverage for user service getSellerInfo', async () => {
-      // Este test intenta ejercitar el path donde getSellerInfo devuelve null
-      // Al buscar productos, internamente se usa mapUserToSellerInfo que llama getSellerInfo
+      // This test tries to exercise the path where getSellerInfo returns null
+      // When searching for products, mapUserToSellerInfo internally calls getSellerInfo
+      // Products should have valid seller info
       return request(app.getHttpServer())
         .get('/products')
         .expect(200)
@@ -496,7 +497,7 @@ describe('Repository Edge Cases and Error Handling (e2e)', () => {
     });
 
     it('should test boundary conditions in repositories', async () => {
-      // Test para exercitar boundary conditions y edge cases
+      // Test para exercitar boundary conditions and edge cases
       const boundaryProduct = {
         ...testProduct,
         title: 'Boundary Test Product',
@@ -571,11 +572,11 @@ describe('Repository Edge Cases and Error Handling (e2e)', () => {
           title: 'All Payment Methods Test',
           enabledPaymentMethods: [
             'mercadopago',
-            'credit_card', 
-            'debit_card',
-            'bank_transfer',
-            'cash',
-            'bitcoin'
+            'visa_credit', 
+            'visa_debit',
+            'mastercard_credit',
+            'mastercard_debit',
+            'pagofacil'
           ]
         })
         .expect(201);

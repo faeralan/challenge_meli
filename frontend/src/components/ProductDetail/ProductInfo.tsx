@@ -24,9 +24,7 @@ import {
 } from './ProductDetail.styles';
 import {
   formatPrice,
-  calculateOriginalPrice,
   calculateInstallmentPrice,
-  calculatePriceWithoutTaxes,
   calculateSalesCount,
   getConditionText,
 } from '../../utils/productUtils';
@@ -54,10 +52,8 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
   selectedColor,
   onColorChange,
 }) => {
-  const originalPrice = calculateOriginalPrice(price);
   const installmentPrice = calculateInstallmentPrice(price);
-  const salesCount = calculateSalesCount(totalReviews);
-  const priceWithoutTaxes = calculatePriceWithoutTaxes(price);
+  const salesCount = calculateSalesCount();
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, index) => (
@@ -65,7 +61,6 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
     ));
   };
 
-  // Función para determinar si es best seller
   const isBestSeller = (totalReviews: number, rating: number): boolean => {
     return totalReviews >= 100 && rating >= 4.3;
   };
@@ -98,7 +93,6 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
       <PriceSection>
         <Price>
           {formatPrice(price)}
-          {/* <DiscountBadge>25% OFF</DiscountBadge> */}
         </Price>
         <InstallmentInfo>
           en 12 cuotas de {formatPrice(installmentPrice)} sin interés

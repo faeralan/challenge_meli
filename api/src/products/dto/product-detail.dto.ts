@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { PaymentMethod } from '../interfaces/payment-method.interface';
 import { SellerInfoDto } from '../../users/dto/seller-info.dto';
+import { Warranty } from '../interfaces/warranty.interface';
 
 export class ProductDetailDto {
   @ApiProperty({ example: 'MLA123456789' })
@@ -27,8 +28,8 @@ export class ProductDetailDto {
   @ApiProperty({ example: 10 })
   stock: number;
 
-  @ApiProperty({ example: 'new', enum: ['new', 'used', 'refurbished'] })
-  condition: 'new' | 'used' | 'refurbished';
+  @ApiProperty({ example: 'new', enum: ['new', 'used'] })
+  condition: 'new' | 'used';
 
   @ApiProperty({ example: 'Electronics' })
   category: string;
@@ -54,8 +55,12 @@ export class ProductDetailDto {
   @ApiProperty({ example: true })
   freeShipping: boolean;
 
-  @ApiProperty({ example: '12 meses de garantía oficial' })
-  warranty?: string;
+  @ApiProperty({ 
+    example: { status: true, value: '12 meses de garantía oficial' },
+    description: 'Información de garantía del producto',
+    required: false
+  })
+  warranty?: Warranty;
 
   @ApiProperty({ 
     example: ['Capacidad: 64 GB', 'Incluye 2 controles', 'Pantalla táctil'], 

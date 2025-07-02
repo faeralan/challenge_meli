@@ -27,12 +27,6 @@ const Title = styled.h1`
   margin-bottom: 8px;
 `;
 
-const Subtitle = styled.p`
-  font-size: 16px;
-  color: ${colors.gray[600]};
-  text-align: center;
-`;
-
 const ProductsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -177,7 +171,7 @@ const Home: React.FC = () => {
         const productsData = await apiService.getProducts();
         setProducts(productsData);
       } catch (err: any) {
-        setError(err.response?.data?.message || 'Error al cargar los productos');
+        setError(err.response?.data?.message || 'Error loading products');
       } finally {
         setLoading(false);
       }
@@ -231,8 +225,8 @@ const Home: React.FC = () => {
       <HomeContainer>
         <Container>
           <EmptyState>
-            <h3>No hay productos disponibles</h3>
-            <p>Vuelve más tarde para ver nuestros productos.</p>
+            <h3>No products available</h3>
+            <p>Check back later to see our products.</p>
           </EmptyState>
         </Container>
       </HomeContainer>
@@ -255,10 +249,6 @@ const Home: React.FC = () => {
                 <img 
                   src={product.mainImage || product.images[0]} 
                   alt={product.title}
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src = 'https://via.placeholder.com/300x200?text=Sin+Imagen';
-                  }}
                 />
               </ProductImage>
               

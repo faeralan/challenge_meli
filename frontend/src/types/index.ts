@@ -39,7 +39,7 @@ export interface Product {
   images: string[];
   mainImage: string;
   stock: number;
-  condition: 'new' | 'used' | 'refurbished';
+  condition: 'new' | 'used';
   category: string;
   brand?: string;
   model?: string;
@@ -48,7 +48,7 @@ export interface Product {
   totalReviews: number;
   paymentMethods: PaymentMethod[];
   freeShipping: boolean;
-  warranty?: string;
+  warranty?: { status: boolean; value: string };
   features?: string[];
   availableColors?: { name: string; image: string; }[];
   createdAt: Date;
@@ -72,7 +72,7 @@ export interface CreateProductDto {
   totalReviews: number;
   enabledPaymentMethods: string[];
   freeShipping: boolean;
-  warranty?: string;
+  warranty?: { status: boolean; value: string };
   features?: string[];
   availableColors?: { name: string; image: string; }[];
 }
@@ -81,4 +81,8 @@ export interface ApiResponse<T> {
   data: T;
   message?: string;
   error?: string;
+}
+export interface Warranty {
+  status: boolean;
+  value: string;
 } 

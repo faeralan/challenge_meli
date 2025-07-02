@@ -5,4 +5,5 @@ export interface IProductRepository extends IRepository<Product> {
   findBySlug(slug: string): Promise<Product | null>;
   findByIdOrSlug(identifier: string): Promise<Product | null>;
   isSlugUnique(slug: string, excludeId?: string): Promise<boolean>;
+  generateUniqueSlug(baseSlug: string, excludeId?: string): Promise<string>;
 } 

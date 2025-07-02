@@ -5,10 +5,8 @@ import { ProductInfo } from '../ProductInfo';
 // Mock the utility functions
 jest.mock('../../../utils/productUtils', () => ({
   formatPrice: jest.fn((price) => `$${price.toLocaleString()}`),
-  calculateOriginalPrice: jest.fn((price) => price * 1.25),
   calculateInstallmentPrice: jest.fn((price) => price / 12),
-  calculatePriceWithoutTaxes: jest.fn((price) => price * 0.9),
-  calculateSalesCount: jest.fn((reviews) => Math.min(reviews * 5, 1000)),
+  calculateSalesCount: jest.fn(() => Math.floor(Math.random() * 1000) + 1),
   getConditionText: jest.fn((condition) => condition === 'new' ? 'Nuevo' : 'Usado'),
 }));
 
@@ -70,7 +68,6 @@ describe('ProductInfo Component', () => {
     render(<ProductInfo {...defaultProps} />);
 
     expect(mockUtils.getConditionText).toHaveBeenCalledWith('new');
-    expect(mockUtils.calculateSalesCount).toHaveBeenCalledWith(150);
     expect(mockUtils.formatPrice).toHaveBeenCalledWith(100000);
     expect(mockUtils.calculateInstallmentPrice).toHaveBeenCalledWith(100000);
   });

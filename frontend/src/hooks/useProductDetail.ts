@@ -50,7 +50,7 @@ export const useImageGallery = (images: string[] = []) => {
     setImageError(false);
   };
 
-  // Verificar si la imagen actual ya está cargada (para imágenes en caché)
+  // Check if the current image is already loaded (for cached images)
   const checkImageLoaded = (imageSrc: string) => {
     if (!imageSrc) return;
     
@@ -64,7 +64,7 @@ export const useImageGallery = (images: string[] = []) => {
       setImageError(true);
     };
     
-    // Si la imagen ya está completa (en caché), ejecutar onload inmediatamente
+    // If the image is already complete (in cache), execute onload immediately
     if (img.complete) {
       setImageLoading(false);
       setImageError(false);
@@ -79,12 +79,12 @@ export const useImageGallery = (images: string[] = []) => {
       setImageLoading(true);
       setImageError(false);
       
-      // Verificar si la primera imagen ya está cargada
+      // Check if the first image is already loaded
       checkImageLoaded(images[0]);
     }
   }, [images]);
 
-  // Verificar imagen cuando cambia el índice seleccionado
+  // Check image when the selected index changes
   useEffect(() => {
     if (images[selectedImageIndex]) {
       checkImageLoaded(images[selectedImageIndex]);

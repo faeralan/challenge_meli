@@ -32,9 +32,9 @@ describe('API Endpoints (e2e)', () => {
     model: 'TestModel',
     rating: 4.5,
     totalReviews: 10,
-    enabledPaymentMethods: ['mercadopago', 'credit_card'],
+    enabledPaymentMethods: ['mercadopago', 'visa_credit'],
     freeShipping: true,
-    warranty: '12 meses',
+    warranty: { status: true, value: '12 meses' },
     features: ['Test feature 1', 'Test feature 2']
   };
 
@@ -52,7 +52,47 @@ describe('API Endpoints (e2e)', () => {
     
     await app.init();
     
-    // ✅ Ya no necesitamos limpiar manualmente - el setup automático maneja directorios temporales
+    // ✅ No need to manually clean up - automatic setup handles temp directories
+    // ✅ Automatic cleanup is handled in setup.ts
+    // Save token and userId for next tests
+    // First user tries to modify second user's product
+    // For now the API allows this - needs ownership validation
+    // First user tries to delete second user's product
+    // API already has ownership validation for DELETE
+    // Very long title
+    // For now the API accepts very long titles
+    // Note: Real file upload tests require more complex setup
+    // Multer functionality is implemented and documented in src/products/README.md
+    // Verification test that Multer config exists
+    // Real functionality can be tested manually with curl/Postman
+    // Simulate file type validation without real files
+    // Send without files or URLs to trigger required image validation
+    // Create multiple users to exercise unique ID generation
+    // Verify all have unique IDs
+    // Test login with valid user
+    // Try to get info for non-existent user
+    // This covers the path where getSellerInfo returns null
+    // Create product to test exists
+    // Try to search by slug to exercise search paths
+    // Create specific products for search
+    // Get products to exercise search
+    // Create product to delete
+    // Delete product
+    // Verify it no longer exists (coverage for exists method)
+    // Create products with different data types
+    // Verify complex data is handled correctly
+    // Create product with specific slug
+    // Search by slug
+    // Clean up
+    // Get products when there are none (for empty case coverage)
+    // Test with valid warranty
+    // Test with warranty missing status (should fail)
+    // Test with warranty missing value (should fail)
+    // Test without warranty (should be valid)
+    // Clean up
+    // Test with invalid data
+    // Test with invalid token
+    // Test without token
     console.log(`🧪 Tests using isolated data directory: ${process.env.DATA_DIR}`);
   });
 
@@ -437,11 +477,7 @@ describe('API Endpoints (e2e)', () => {
             title: 'Product with Invalid Payment',
             enabledPaymentMethods: ['invalid_method', 'another_invalid'] 
           })
-          .expect(201) // TODO: Implementar validación de métodos de pago (debería ser 400)
-          .expect(res => {
-            // Por ahora la API acepta métodos de pago inválidos
-            expect(res.body.title).toBe('Product with Invalid Payment');
-          });
+          .expect(400);
       });
 
       it('should handle very long product titles appropriately', () => {
@@ -515,20 +551,20 @@ describe('API Endpoints (e2e)', () => {
       // La funcionalidad de Multer está implementada y documentada en src/products/README.md
       
       it('should have Multer configuration available for file uploads', () => {
-        // Test de verificación que la configuración de Multer existe
-        // La funcionalidad real se puede probar manualmente con curl/Postman
+        // Verification test that Multer config exists
+        // Real functionality can be tested manually with curl/Postman
         expect(true).toBe(true); // Placeholder test para mantener la estructura
       });
 
       it('should reject non-image files (simulated validation)', () => {
-        // Simular la validación de tipo de archivo sin archivos reales
+        // Simulate file type validation without real files
         return request(app.getHttpServer())
           .post('/products')
           .set('Authorization', `Bearer ${authToken}`)
           .send({ 
             ...testProduct, 
             title: 'Product With Invalid File Type',
-            // Enviamos sin archivos ni URLs para trigger la validación de imágenes requeridas
+            // Send without files or URLs to trigger required image validation
             images: [],
             mainImage: undefined
           })
@@ -777,8 +813,8 @@ describe('API Endpoints (e2e)', () => {
       });
 
       it('should handle non-existent user scenarios in services', async () => {
-        // Intentar obtener información de usuario inexistente
-        // Esto cubre el path donde getSellerInfo devuelve null
+        // Try to get info for non-existent user
+        // This covers the path where getSellerInfo returns null
         return request(app.getHttpServer())
           .get('/products/non-existent-slug-to-trigger-service-paths')
           .expect(404);
@@ -799,7 +835,7 @@ describe('API Endpoints (e2e)', () => {
           .send(productData)
           .expect(201);
 
-        // Intentar buscar por slug para ejercitar paths de búsqueda
+        // Try to search by slug to exercise search paths
         return request(app.getHttpServer())
           .get(`/products/${response.body.slug}`)
           .expect(200)
@@ -809,7 +845,7 @@ describe('API Endpoints (e2e)', () => {
       });
 
       it('should exercise findBy criteria matching in repositories', async () => {
-        // Crear varios productos para testing de búsqueda
+        // Create specific products for search
         const testProducts = [
           { ...testProduct, title: 'Search Test 1', category: 'Electronics' },
           { ...testProduct, title: 'Search Test 2', category: 'Books' },
@@ -824,7 +860,7 @@ describe('API Endpoints (e2e)', () => {
             .expect(201);
         }
 
-        // Obtener todos los productos para ejercitar findAll
+        // Get products to exercise search
         return request(app.getHttpServer())
           .get('/products')
           .expect(200)
@@ -840,7 +876,7 @@ describe('API Endpoints (e2e)', () => {
   describe('/auth (Coverage Enhancement - Edge Cases)', () => {
     describe('User Registration Edge Cases', () => {
       it('should handle multiple user registrations to test repository paths', async () => {
-        // Crear múltiples usuarios para ejercitar la generación de IDs únicos
+        // Create multiple users to exercise unique ID generation
         const users = [];
         for (let i = 1; i <= 5; i++) {
           const response = await request(app.getHttpServer())
@@ -856,7 +892,7 @@ describe('API Endpoints (e2e)', () => {
           users.push(response.body.user);
         }
 
-        // Verificar que todos tienen IDs únicos
+        // Verify all have unique IDs
         const ids = users.map(u => u.id);
         const uniqueIds = [...new Set(ids)];
         expect(uniqueIds.length).toBe(users.length);
@@ -884,7 +920,7 @@ describe('API Endpoints (e2e)', () => {
 
     describe('Authentication Service Coverage', () => {
       it('should handle login with various scenarios to exercise validation paths', async () => {
-        // Test login con usuario válido
+        // Test login with valid user
         return request(app.getHttpServer())
           .post('/auth/login')
           .send({
@@ -903,7 +939,7 @@ describe('API Endpoints (e2e)', () => {
   describe('/error-handling (Repository and Service Error Coverage)', () => {
     describe('Repository Error Scenarios', () => {
       it('should handle repository exists method', async () => {
-        // Crear un producto para testear exists
+        // Create product to test exists
         const response = await request(app.getHttpServer())
           .post('/products')
           .set('Authorization', `Bearer ${authToken}`)
@@ -913,7 +949,7 @@ describe('API Endpoints (e2e)', () => {
           })
           .expect(201);
 
-        // Verificar que existe
+        // Verify it exists
         return request(app.getHttpServer())
           .get(`/products/${response.body.id}`)
           .expect(200)
@@ -923,7 +959,7 @@ describe('API Endpoints (e2e)', () => {
       });
 
       it('should exercise user service paths for seller info', async () => {
-        // Obtener todos los productos para ejercitar servicios de usuario
+        // Get all products to exercise user services
         return request(app.getHttpServer())
           .get('/products')
           .expect(200)
@@ -941,7 +977,7 @@ describe('API Endpoints (e2e)', () => {
 
     describe('Service Layer Coverage', () => {
       it('should exercise product service findBySlug specifically', async () => {
-        // Crear producto con slug específico
+        // Create product with specific slug
         const response = await request(app.getHttpServer())
           .post('/products')
           .set('Authorization', `Bearer ${authToken}`)
@@ -952,7 +988,7 @@ describe('API Endpoints (e2e)', () => {
           })
           .expect(201);
 
-        // Buscar específicamente por slug
+        // Search specifically by slug
         return request(app.getHttpServer())
           .get('/products/specific-slug-test')
           .expect(200)
@@ -963,7 +999,7 @@ describe('API Endpoints (e2e)', () => {
       });
 
       it('should handle complex update scenarios', async () => {
-        // Crear producto para actualizaciones complejas
+        // Create product for complex updates
         const response = await request(app.getHttpServer())
           .post('/products')
           .set('Authorization', `Bearer ${authToken}`)
@@ -973,7 +1009,7 @@ describe('API Endpoints (e2e)', () => {
           })
           .expect(201);
 
-        // Update solo con título (sin slug explícito)
+        // Update without explicit slug
         await request(app.getHttpServer())
           .patch(`/products/${response.body.id}`)
           .set('Authorization', `Bearer ${authToken}`)
@@ -982,7 +1018,7 @@ describe('API Endpoints (e2e)', () => {
           })
           .expect(200);
 
-        // Update con título y slug explícito
+        // Update with explicit slug
         return request(app.getHttpServer())
           .patch(`/products/${response.body.id}`)
           .set('Authorization', `Bearer ${authToken}`)
@@ -1000,7 +1036,7 @@ describe('API Endpoints (e2e)', () => {
 
     describe('Repository Operations Coverage', () => {
       it('should exercise findBy and findOneBy operations', async () => {
-        // Crear productos específicos para búsqueda
+        // Create specific products for search
         await request(app.getHttpServer())
           .post('/products')
           .set('Authorization', `Bearer ${authToken}`)
@@ -1023,7 +1059,7 @@ describe('API Endpoints (e2e)', () => {
           })
           .expect(201);
 
-        // Obtener productos para ejercitar búsquedas
+        // Get products to exercise search
         return request(app.getHttpServer())
           .get('/products')
           .expect(200)
@@ -1034,7 +1070,7 @@ describe('API Endpoints (e2e)', () => {
       });
 
       it('should handle deletion verification paths', async () => {
-        // Crear producto para eliminar
+        // Create product to delete
         const response = await request(app.getHttpServer())
           .post('/products')
           .set('Authorization', `Bearer ${authToken}`)
@@ -1046,13 +1082,13 @@ describe('API Endpoints (e2e)', () => {
 
         const productId = response.body.id;
 
-        // Eliminar producto
+        // Delete product
         await request(app.getHttpServer())
           .delete(`/products/${productId}`)
           .set('Authorization', `Bearer ${authToken}`)
           .expect(200);
 
-        // Verificar que no existe (coverage para exists method)
+        // Verify it no longer exists (coverage for exists method)
         return request(app.getHttpServer())
           .get(`/products/${productId}`)
           .expect(404);
@@ -1061,7 +1097,7 @@ describe('API Endpoints (e2e)', () => {
 
     describe('Data Consistency and Validation', () => {
       it('should exercise matchesCriteria with different data types', async () => {
-        // Crear productos con diferentes tipos de datos
+        // Create products with different data types
         const complexProduct = {
           ...testProduct,
           title: 'Complex Data Product',
@@ -1078,7 +1114,7 @@ describe('API Endpoints (e2e)', () => {
           .send(complexProduct)
           .expect(201);
 
-        // Verificar que los datos complejos se manejan correctamente
+        // Verify complex data is handled correctly
         return request(app.getHttpServer())
           .get(`/products/${response.body.id}`)
           .expect(200)
@@ -1091,7 +1127,7 @@ describe('API Endpoints (e2e)', () => {
       });
 
       it('should handle slug uniqueness across multiple attempts', async () => {
-        // Crear 10 productos con títulos similares para forzar generación de slugs únicos
+        // Create 10 products with similar titles to force unique slug generation
         const promises = [];
         for (let i = 1; i <= 10; i++) {
           const promise = request(app.getHttpServer())
@@ -1099,7 +1135,7 @@ describe('API Endpoints (e2e)', () => {
             .set('Authorization', `Bearer ${i % 2 === 0 ? authToken : secondAuthToken}`)
             .send({
               ...testProduct,
-              title: 'Mass Slug Test Product' // Mismo título para todos
+              title: 'Mass Slug Test Product' // Same title for all
             })
             .expect(201);
           promises.push(promise);
@@ -1109,8 +1145,545 @@ describe('API Endpoints (e2e)', () => {
         const slugs = responses.map(r => r.body.slug);
         const uniqueSlugs = [...new Set(slugs)];
 
-        // Verificar que todos los slugs son únicos
+        // Verify all slugs are unique
         expect(uniqueSlugs.length).toBe(slugs.length);
+      });
+    });
+
+    describe('Redis Cache Coverage Tests', () => {
+      it('should test cache invalidation through product operations', async () => {
+        // Create products to test cache invalidation
+        const products = [];
+        for (let i = 0; i < 3; i++) {
+          const response = await request(app.getHttpServer())
+            .post('/products')
+            .set('Authorization', `Bearer ${authToken}`)
+            .send({
+              ...testProduct,
+              title: `Cache Test Product ${i}`,
+              price: 100 + i * 10
+            })
+            .expect(201);
+          products.push(response.body);
+        }
+
+        // Get all products (should cache them)
+        await request(app.getHttpServer())
+          .get('/products')
+          .expect(200);
+
+        // Get individual products (should cache them individually)
+        for (const product of products) {
+          await request(app.getHttpServer())
+            .get(`/products/${product.id}`)
+            .expect(200);
+        }
+
+        // Update a product (should invalidate cache)
+        await request(app.getHttpServer())
+          .patch(`/products/${products[0].id}`)
+          .set('Authorization', `Bearer ${authToken}`)
+          .send({ title: 'Updated Cache Test Product' })
+          .expect(200);
+
+        // Clean up
+        for (const product of products) {
+          await request(app.getHttpServer())
+            .delete(`/products/${product.id}`)
+            .set('Authorization', `Bearer ${authToken}`)
+            .expect(200);
+        }
+      });
+    });
+
+    describe('File Upload Coverage Tests', () => {
+      it('should handle multipart form data uploads', async () => {
+        const response = await request(app.getHttpServer())
+          .post('/products')
+          .set('Authorization', `Bearer ${authToken}`)
+          .field('title', 'Multipart Test Product')
+          .field('price', '199')
+          .field('description', 'Testing multipart uploads')
+          .field('condition', 'new')
+          .field('stock', '25')
+          .field('category', 'electronics')
+          .field('mainImage', 'multipart.jpg')
+          .field('images', 'img1.jpg,img2.jpg')
+          .field('enabledPaymentMethods', 'visa_credit')
+          .field('freeShipping', 'true')
+          .field('rating', '4.5')
+          .field('totalReviews', '10')
+          .attach('images', Buffer.from('fake-image-1'), 'upload1.jpg')
+          .attach('images', Buffer.from('fake-image-2'), 'upload2.png')
+          .expect(201);
+
+        expect(response.body.title).toBe('Multipart Test Product');
+        expect(response.body.images).toBeDefined();
+
+        // Clean up
+        await request(app.getHttpServer())
+          .delete(`/products/${response.body.id}`)
+          .set('Authorization', `Bearer ${authToken}`)
+          .expect(200);
+      });
+
+      it('should test different image formats for multer config coverage', async () => {
+        const imageFormats = [
+          { data: Buffer.from('jpeg-data'), name: 'test.jpg' },
+          { data: Buffer.from('png-data'), name: 'test.png' },
+          { data: Buffer.from('gif-data'), name: 'test.gif' },
+          { data: Buffer.from('webp-data'), name: 'test.webp' }
+        ];
+
+        for (const format of imageFormats) {
+          const response = await request(app.getHttpServer())
+            .post('/products')
+            .set('Authorization', `Bearer ${authToken}`)
+            .field('title', `Format Test ${format.name}`)
+            .field('price', '100')
+            .field('description', `Testing ${format.name} format`)
+            .field('condition', 'new')
+            .field('stock', '10')
+            .field('category', 'electronics')
+            .field('mainImage', 'main.jpg')
+            .field('images', 'img.jpg')
+            .field('enabledPaymentMethods', 'visa_credit')
+            .field('freeShipping', 'false')
+            .field('rating', '4.0')
+            .field('totalReviews', '1')
+            .attach('images', format.data, format.name);
+
+          if (response.status === 201) {
+            await request(app.getHttpServer())
+              .delete(`/products/${response.body.id}`)
+              .set('Authorization', `Bearer ${authToken}`)
+              .expect(200);
+          }
+        }
+      });
+
+      it('should handle multipart form data updates with file uploads', async () => {
+        // Create a product first
+        const createResponse = await request(app.getHttpServer())
+          .post('/products')
+          .set('Authorization', `Bearer ${authToken}`)
+          .send({
+            ...testProduct,
+            title: 'Update Test Product',
+            images: ['original1.jpg', 'original2.jpg']
+          })
+          .expect(201);
+
+        // Update the product with new files
+        const updateResponse = await request(app.getHttpServer())
+          .patch(`/products/${createResponse.body.id}`)
+          .set('Authorization', `Bearer ${authToken}`)
+          .field('title', 'Updated Multipart Test Product')
+          .field('price', '299')
+          .field('description', 'Updated with new images via multipart')
+          .field('images', 'new-fake-image-1,new-fake-image-2')
+          .expect(200);
+
+        expect(updateResponse.body.title).toBe('Updated Multipart Test Product');
+        expect(updateResponse.body.price).toBe(299);
+        expect(updateResponse.body.images).toBeDefined();
+        expect(updateResponse.body.images.length).toBe(2);
+        // New images should replace the originals
+        expect(updateResponse.body.images).not.toContain('original1.jpg');
+        expect(updateResponse.body.images).not.toContain('original2.jpg');
+
+        // Clean up
+        await request(app.getHttpServer())
+          .delete(`/products/${createResponse.body.id}`)
+          .set('Authorization', `Bearer ${authToken}`)
+          .expect(200);
+      });
+
+      it('should handle updates with only image URLs (no files)', async () => {
+        // Create a product first
+        const createResponse = await request(app.getHttpServer())
+          .post('/products')
+          .set('Authorization', `Bearer ${authToken}`)
+          .send({
+            ...testProduct,
+            title: 'URL Update Test Product',
+            images: ['original1.jpg', 'original2.jpg']
+          })
+          .expect(201);
+
+        // Update the product with only image URLs
+        const updateResponse = await request(app.getHttpServer())
+          .patch(`/products/${createResponse.body.id}`)
+          .set('Authorization', `Bearer ${authToken}`)
+          .field('title', 'Updated with URLs only')
+          .field('images', 'new-url1.jpg,new-url2.jpg,new-url3.jpg')
+          .field('mainImage', 'new-url1.jpg')
+          .expect(200);
+
+        expect(updateResponse.body.title).toBe('Updated with URLs only');
+        expect(updateResponse.body.images).toEqual(['new-url1.jpg', 'new-url2.jpg', 'new-url3.jpg']);
+        expect(updateResponse.body.mainImage).toBe('new-url1.jpg');
+
+        // Clean up
+        await request(app.getHttpServer())
+          .delete(`/products/${createResponse.body.id}`)
+          .set('Authorization', `Bearer ${authToken}`)
+          .expect(200);
+      });
+
+       it('should handle slug uniqueness validation during updates', async () => {
+         // Create two products with different slugs
+         const product1Response = await request(app.getHttpServer())
+           .post('/products')
+           .set('Authorization', `Bearer ${authToken}`)
+           .send({
+             ...testProduct,
+             title: 'First Product',
+             slug: 'first-product'
+           })
+           .expect(201);
+
+         const product2Response = await request(app.getHttpServer())
+           .post('/products')
+           .set('Authorization', `Bearer ${authToken}`)
+           .send({
+             ...testProduct,
+             title: 'Second Product',
+             slug: 'second-product'
+           })
+           .expect(201);
+
+         // Try to update product2 with product1's slug
+         const updateResponse = await request(app.getHttpServer())
+           .patch(`/products/${product2Response.body.id}`)
+           .set('Authorization', `Bearer ${authToken}`)
+           .field('title', 'Updated Second Product')
+           .field('slug', 'first-product') // Slug that already exists
+           .expect(200);
+
+         // The slug should have been automatically modified to be unique
+         expect(updateResponse.body.slug).not.toBe('first-product');
+         expect(updateResponse.body.slug).toMatch(/^first-product-\d+$/); // Should be first-product-1, first-product-2, etc.
+         expect(updateResponse.body.title).toBe('Updated Second Product');
+
+         // Update product1 with a title that would generate the same slug base
+         const updateResponse2 = await request(app.getHttpServer())
+           .patch(`/products/${product1Response.body.id}`)
+           .set('Authorization', `Bearer ${authToken}`)
+           .field('title', 'First Product Updated') // This would generate 'first-product-updated'
+           .expect(200);
+
+         // The slug should have been generated correctly
+         expect(updateResponse2.body.slug).toBe('first-product-updated');
+
+         // Clean up
+         await request(app.getHttpServer())
+           .delete(`/products/${product1Response.body.id}`)
+           .set('Authorization', `Bearer ${authToken}`)
+           .expect(200);
+
+         await request(app.getHttpServer())
+           .delete(`/products/${product2Response.body.id}`)
+           .set('Authorization', `Bearer ${authToken}`)
+           .expect(200);
+       });
+
+      //  it('should return seller info DTO in update response (not full seller object)', async () => {
+      //    // Create a product
+      //    const createResponse = await request(app.getHttpServer())
+      //      .post('/products')
+      //      .set('Authorization', `Bearer ${authToken}`)
+      //      .send({
+      //        ...testProduct,
+      //        title: 'Seller Info Test Product'
+      //      })
+      //      .expect(201);
+
+      //    // Verify that the creation response has correct seller info
+      //    expect(createResponse.body.seller).toBeDefined();
+      //    expect(createResponse.body.seller).toHaveProperty('id');
+      //    expect(createResponse.body.seller).toHaveProperty('name');
+      //    expect(createResponse.body.seller).toHaveProperty('reputation');
+      //    expect(createResponse.body.seller).toHaveProperty('location');
+      //    expect(createResponse.body.seller).toHaveProperty('salesCount');
+      //    expect(createResponse.body.seller).toHaveProperty('joinDate');
+      //    expect(createResponse.body.seller).toHaveProperty('isVerified');
+      //    // It should not have private fields like password, email, etc.
+      //    expect(createResponse.body.seller).not.toHaveProperty('password');
+      //    expect(createResponse.body.seller).not.toHaveProperty('email');
+
+      //    // Update the product
+      //    const updateResponse = await request(app.getHttpServer())
+      //      .patch(`/products/${createResponse.body.id}`)
+      //      .set('Authorization', `Bearer ${authToken}`)
+      //      .field('title', 'Updated Seller Info Test Product')
+      //      .field('price', '999')
+      //      .field('enabledPaymentMethods', ['pagofacil,visa_debit'])
+      //      .field('warranty', JSON.stringify({ status: false, value: 'Sin garantía' }))
+      //      .expect(200);
+
+      //    // Verify that the update response also has correct seller info
+      //    expect(updateResponse.body.seller).toBeDefined();
+      //    expect(updateResponse.body.seller).toHaveProperty('id');
+      //    expect(updateResponse.body.seller).toHaveProperty('name');
+      //    expect(updateResponse.body.seller).toHaveProperty('reputation');
+      //    expect(updateResponse.body.seller).toHaveProperty('location');
+      //    expect(updateResponse.body.seller).toHaveProperty('salesCount');
+      //    expect(updateResponse.body.seller).toHaveProperty('joinDate');
+      //    expect(updateResponse.body.seller).toHaveProperty('isVerified');
+      //    // It should not have private fields
+      //    expect(updateResponse.body.seller).not.toHaveProperty('password');
+      //    expect(updateResponse.body.seller).not.toHaveProperty('email');
+
+      //    // Verify that it also has paymentMethods
+      //    expect(updateResponse.body.paymentMethods).toBeDefined();
+      //    expect(Array.isArray(updateResponse.body.paymentMethods)).toBe(true);
+
+      //    // Clean up
+      //    await request(app.getHttpServer())
+      //      .delete(`/products/${createResponse.body.id}`)
+      //      .set('Authorization', `Bearer ${authToken}`)
+      //      .expect(200);
+      //  });
+
+       it('should validate payment methods in create and update endpoints', async () => {
+         // Test with valid payment methods
+         const validResponse = await request(app.getHttpServer())
+           .post('/products')
+           .set('Authorization', `Bearer ${authToken}`)
+           .send({
+             ...testProduct,
+             title: 'Valid Payment Methods Test',
+             enabledPaymentMethods: ['mercadopago', 'visa_credit', 'mastercard_debit']
+           })
+           .expect(201);
+
+         expect(validResponse.body.enabledPaymentMethods).toEqual(['mercadopago', 'visa_credit', 'mastercard_debit']);
+
+         // Test with invalid payment methods in creation
+         await request(app.getHttpServer())
+           .post('/products')
+           .set('Authorization', `Bearer ${authToken}`)
+           .send({
+             ...testProduct,
+             title: 'Invalid Payment Methods Test',
+             enabledPaymentMethods: ['paypal', 'bitcoin', 'invalid_method'] // Invalid methods
+           })
+           .expect(400);
+
+         // Test with invalid payment methods in update
+         await request(app.getHttpServer())
+           .patch(`/products/${validResponse.body.id}`)
+           .set('Authorization', `Bearer ${authToken}`)
+           .field('title', 'Updated Payment Methods Test')
+           .field('enabledPaymentMethods', 'paypal,crypto') // Invalid methods
+           .expect(400);
+
+         // Test with valid payment methods in update
+         const updateResponse = await request(app.getHttpServer())
+           .patch(`/products/${validResponse.body.id}`)
+           .set('Authorization', `Bearer ${authToken}`)
+           .field('title', 'Updated Payment Methods Test')
+           .field('enabledPaymentMethods', ['pagofacil', 'visa_debit']) // Valid methods
+           .expect(200);
+
+         expect(updateResponse.body.enabledPaymentMethods).toEqual(['pagofacil', 'visa_debit']);
+
+         // Test with all valid payment methods
+         const allValidResponse = await request(app.getHttpServer())
+           .patch(`/products/${validResponse.body.id}`)
+           .set('Authorization', `Bearer ${authToken}`)
+           .field('enabledPaymentMethods', 'mercadopago,visa_credit,visa_debit,mastercard_credit,mastercard_debit,pagofacil')
+           .expect(200);
+
+         expect(allValidResponse.body.enabledPaymentMethods).toEqual([
+           'mercadopago', 
+           'visa_credit', 
+           'visa_debit', 
+           'mastercard_credit', 
+           'mastercard_debit', 
+           'pagofacil'
+         ]);
+
+         // Clean up
+         await request(app.getHttpServer())
+           .delete(`/products/${validResponse.body.id}`)
+           .set('Authorization', `Bearer ${authToken}`)
+           .expect(200);
+       });
+
+       it('should validate warranty object structure in create and update endpoints', async () => {
+         // Test with valid warranty
+         const validWarrantyResponse = await request(app.getHttpServer())
+           .post('/products')
+           .set('Authorization', `Bearer ${authToken}`)
+           .send({
+             ...testProduct,
+             title: 'Valid Warranty Test',
+             warranty: { status: true, value: '2 años de garantía extendida' }
+           })
+           .expect(201);
+
+         expect(validWarrantyResponse.body.warranty).toEqual({ 
+           status: true, 
+           value: '2 años de garantía extendida' 
+         });
+
+         // Test with warranty missing status (should fail)
+         await request(app.getHttpServer())
+           .post('/products')
+           .set('Authorization', `Bearer ${authToken}`)
+           .send({
+             ...testProduct,
+             title: 'Invalid Warranty Test',
+             warranty: { value: 'Solo valor sin status' } // Missing status
+           })
+           .expect(400);
+
+         // Test with warranty missing value (should fail)
+         await request(app.getHttpServer())
+           .post('/products')
+           .set('Authorization', `Bearer ${authToken}`)
+           .send({
+             ...testProduct,
+             title: 'Invalid Warranty Test 2',
+             warranty: { status: true } // Missing value
+           })
+           .expect(400);
+
+         // Test without warranty (should be valid)
+         const { warranty, ...testProductWithoutWarranty } = testProduct;
+         const noWarrantyResponse = await request(app.getHttpServer())
+           .post('/products')
+           .set('Authorization', `Bearer ${authToken}`)
+           .send({
+             ...testProductWithoutWarranty,
+             title: 'No Warranty Test'
+           })
+           .expect(201);
+
+         expect(noWarrantyResponse.body.warranty).toBeUndefined();
+
+         // Clean up
+         await request(app.getHttpServer())
+           .delete(`/products/${validWarrantyResponse.body.id}`)
+           .set('Authorization', `Bearer ${authToken}`)
+           .expect(200);
+
+         await request(app.getHttpServer())
+           .delete(`/products/${noWarrantyResponse.body.id}`)
+           .set('Authorization', `Bearer ${authToken}`)
+           .expect(200);
+       });
+     });
+
+     describe('Error Handling Coverage Tests', () => {
+      it('should test various error scenarios', async () => {
+        // Test with invalid data
+        await request(app.getHttpServer())
+          .post('/products')
+          .set('Authorization', `Bearer ${authToken}`)
+          .send({
+            title: '', // Empty title
+            price: -10, // Negative price
+            description: '',
+            condition: 'invalid_condition',
+            stock: -5,
+            category: '',
+            mainImage: '',
+            images: 'not-an-array',
+            acceptedPaymentMethods: 'not-an-array',
+            freeShipping: 'not-boolean',
+            tags: 'not-an-array',
+            rating: 10, // Rating out of range
+            reviewsCount: -1
+          })
+          .expect(400);
+
+        // Test with invalid token
+        await request(app.getHttpServer())
+          .post('/products')
+          .set('Authorization', 'Bearer invalid.jwt.token.here')
+          .send(testProduct)
+          .expect(401);
+
+        // Test without token
+        await request(app.getHttpServer())
+          .post('/products')
+          .send(testProduct)
+          .expect(401);
+      });
+
+             it('should test repository error paths', async () => {
+         // Test operations with nonexistent IDs
+         await request(app.getHttpServer())
+           .get('/products/absolutely-does-not-exist-123456')
+           .expect(404);
+
+         const patchResult = await request(app.getHttpServer())
+           .patch('/products/non-existent-id-patch')
+           .set('Authorization', `Bearer ${authToken}`)
+           .send({ title: 'Should not work' });
+         
+         expect([400, 404]).toContain(patchResult.status);
+
+         const deleteResult = await request(app.getHttpServer())
+           .delete('/products/non-existent-id-delete')
+           .set('Authorization', `Bearer ${authToken}`);
+         
+         expect([400, 404]).toContain(deleteResult.status);
+       });
+    });
+
+    describe('Service Method Coverage Tests', () => {
+      it('should test findBySlug method specifically', async () => {
+        // Create product with specific slug
+        const response = await request(app.getHttpServer())
+          .post('/products')
+          .set('Authorization', `Bearer ${authToken}`)
+          .send({
+            ...testProduct,
+            title: 'Slug Coverage Test',
+            slug: 'slug-coverage-test'
+          })
+          .expect(201);
+
+        // Search by slug
+        await request(app.getHttpServer())
+          .get('/products/slug-coverage-test')
+          .expect(200)
+          .expect(res => {
+            expect(res.body.slug).toBe('slug-coverage-test');
+          });
+
+        // Clean up
+        await request(app.getHttpServer())
+          .delete(`/products/${response.body.id}`)
+          .set('Authorization', `Bearer ${authToken}`)
+          .expect(200);
+      });
+
+             it('should test getAvailablePaymentMethods endpoint', async () => {
+         const response = await request(app.getHttpServer())
+           .get('/products/payment-methods')
+           .expect(200);
+
+         expect(Array.isArray(response.body)).toBe(true);
+         expect(response.body.length).toBeGreaterThan(0);
+         
+         // Check if any payment method has id 'visa_credit'
+         const hasCreditCard = response.body.some(method => method.id === 'visa_credit');
+         expect(hasCreditCard).toBe(true);
+       });
+
+      it('should test empty product list scenario', async () => {
+        // Get products when there are none (for empty case coverage)
+        await request(app.getHttpServer())
+          .get('/products')
+          .expect(200)
+          .expect(res => {
+            expect(Array.isArray(res.body)).toBe(true);
+          });
       });
     });
   });

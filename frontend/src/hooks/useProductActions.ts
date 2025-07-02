@@ -22,15 +22,14 @@ export const useProductActions = ({
       return;
     }
 
-    // Lógica para comprar ahora
     console.log('Comprar ahora:', {
       productId: product.id,
       quantity,
       price: product.price * quantity
     });
     
-    // Aquí se implementaría la lógica real de compra
-    // Por ejemplo, redirigir al checkout o abrir modal de compra
+    // Here we would implement the actual purchase logic
+    // For example, redirect to checkout or open a purchase modal
   }, [product?.id, product?.price, quantity]);
 
   const handleAddToCart = useCallback(() => {
@@ -39,15 +38,14 @@ export const useProductActions = ({
       return;
     }
 
-    // Lógica para agregar al carrito
     console.log('Agregar al carrito:', {
       productId: product.id,
       quantity,
       price: product.price
     });
     
-    // Aquí se implementaría la lógica real de carrito
-    // Por ejemplo, llamar a una API o actualizar estado global
+    // Here we would implement the actual cart logic
+    // For example, call an API or update global state
   }, [product?.id, product?.price, quantity]);
 
   return {

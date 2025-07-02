@@ -4,18 +4,12 @@ import {
   PaymentMethodsTitle,
   PaymentSection,
   PaymentSectionTitle,
-  PaymentSectionSubtitle,
   PaymentMethodsGrid,
   PaymentMethodIcon,
-  MercadoPagoIcon,
   PaymentMethodLink,
 } from './ProductDetail.styles';
-import { 
-  categorizePaymentMethods,
-  getPaymentMethodStyle,
-  getPaymentMethodDisplayName 
-} from '../../utils/productUtils';
 import { PaymentMethod } from '../../types';
+import { categorizePaymentMethods } from '../../utils/productUtils';
 
 interface PaymentMethodsProps {
   paymentMethods: PaymentMethod[];
@@ -26,38 +20,34 @@ export const PaymentMethods: React.FC<PaymentMethodsProps> = ({ paymentMethods }
     return null;
   }
 
-  const { creditCards, debitCards, cash } = categorizePaymentMethods(paymentMethods);
-
-  const renderPaymentIcon = (methodId: string, methodName: string): React.ReactElement => {
-    const displayName = getPaymentMethodDisplayName(methodId, methodName);
-    const style = getPaymentMethodStyle(methodId);
-    
-    return (
-      <PaymentMethodIcon key={methodId} style={style}>
-        {displayName}
-      </PaymentMethodIcon>
-    );
-  };
+  const { creditCards, debitCards, cash, mercadopago } = categorizePaymentMethods(paymentMethods);
 
   return (
     <PaymentMethodsCard>
       <PaymentMethodsTitle>Medios de pago</PaymentMethodsTitle>
       
-      <PaymentSection>
-        <PaymentSectionTitle>Cuotas sin Tarjeta</PaymentSectionTitle>
-        <PaymentMethodsGrid>
-          <MercadoPagoIcon>
-            mercado<br/>pago
-          </MercadoPagoIcon>
-        </PaymentMethodsGrid>
-      </PaymentSection>
+      {mercadopago.length > 0 && (
+        <PaymentSection>
+          <PaymentSectionTitle>Cuotas sin Tarjeta</PaymentSectionTitle>
+          <PaymentMethodsGrid>
+              {mercadopago.map(method => (
+                <PaymentMethodIcon key={method.id}>
+                  <img src={method.icon} alt={method.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                </PaymentMethodIcon>
+              ))}
+          </PaymentMethodsGrid>
+        </PaymentSection>
+      )}
 
       {creditCards.length > 0 && (
         <PaymentSection>
           <PaymentSectionTitle>Tarjetas de crédito</PaymentSectionTitle>
-          <PaymentSectionSubtitle>¡Mismo precio en cuotas con bancos seleccionados!</PaymentSectionSubtitle>
           <PaymentMethodsGrid>
-            {creditCards.map(method => renderPaymentIcon(method.id, method.name))}
+            {creditCards.map(method => (
+              <PaymentMethodIcon key={method.id}>
+                <img src={method.icon} alt={method.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+              </PaymentMethodIcon>
+            ))}
           </PaymentMethodsGrid>
         </PaymentSection>
       )}
@@ -66,7 +56,11 @@ export const PaymentMethods: React.FC<PaymentMethodsProps> = ({ paymentMethods }
         <PaymentSection>
           <PaymentSectionTitle>Tarjetas de débito</PaymentSectionTitle>
           <PaymentMethodsGrid>
-            {debitCards.map(method => renderPaymentIcon(method.id, method.name))}
+            {debitCards.map(method => (
+              <PaymentMethodIcon key={method.id}>
+                <img src={method.icon} alt={method.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+              </PaymentMethodIcon>
+            ))}
           </PaymentMethodsGrid>
         </PaymentSection>
       )}
@@ -75,7 +69,11 @@ export const PaymentMethods: React.FC<PaymentMethodsProps> = ({ paymentMethods }
         <PaymentSection>
           <PaymentSectionTitle>Efectivo</PaymentSectionTitle>
           <PaymentMethodsGrid>
-            {cash.map(method => renderPaymentIcon(method.id, method.name))}
+            {cash.map(method => (
+              <PaymentMethodIcon key={method.id}>
+                <img src={method.icon} alt={method.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+              </PaymentMethodIcon>
+            ))}
           </PaymentMethodsGrid>
         </PaymentSection>
       )}

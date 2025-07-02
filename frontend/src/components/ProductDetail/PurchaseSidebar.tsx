@@ -62,7 +62,7 @@ export const PurchaseSidebar: React.FC<PurchaseSidebarProps> = ({
 
         <SellerInfo seller={product.seller} />
         
-        <ProductPolicies />
+        <ProductPolicies warranty={product.warranty} />
       </PurchaseBox>
 
       <PaymentMethods paymentMethods={product.paymentMethods} />

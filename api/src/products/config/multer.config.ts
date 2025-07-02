@@ -3,13 +3,13 @@ import { extname, join } from 'path';
 import { existsSync, mkdirSync } from 'fs';
 import { BadRequestException } from '@nestjs/common';
 
-// Configuración para el almacenamiento de archivos
+// Configuration for file storage
 export const multerConfig = {
   storage: diskStorage({
     destination: (req, file, callback) => {
       const uploadPath = join(process.cwd(), 'uploads', 'temp');
       
-      // Crear directorio si no existe
+      // Create directory if it does not exist
       if (!existsSync(uploadPath)) {
         mkdirSync(uploadPath, { recursive: true });
       }
@@ -17,7 +17,7 @@ export const multerConfig = {
       callback(null, uploadPath);
     },
     filename: (req, file, callback) => {
-      // Generar nombre único para el archivo
+      // Generate unique file name
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
       const fileExtension = extname(file.originalname);
       const fileName = `${file.fieldname}-${uniqueSuffix}${fileExtension}`;
@@ -25,7 +25,7 @@ export const multerConfig = {
     },
   }),
   fileFilter: (req, file, callback) => {
-    // Filtrar solo imágenes
+    // Filter only images
     const allowedMimes = [
       'image/jpeg',
       'image/jpg', 
@@ -39,15 +39,15 @@ export const multerConfig = {
     } else {
       callback(
         new BadRequestException(
-          'Tipo de archivo no válido. Solo se permiten imágenes (jpeg, jpg, png, gif, webp)'
+          'Invalid file type. Only images (jpeg, jpg, png, gif, webp) are allowed'
         ),
         false
       );
     }
   },
   limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB por archivo
-    files: 10, // Máximo 10 archivos
+    fileSize: 5 * 1024 * 1024, // 5MB per file
+    files: 10, // Maximum 10 files
   },
 };
 
