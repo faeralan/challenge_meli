@@ -12,7 +12,23 @@
 
 ```bash
 git clone https://github.com/faeralan/challenge_meli
+cd challenge_meli
 ```
+
+2. API and Frontend
+
+**Environment Setup**
+   
+   Copy the example environment file and configure your variables:
+```bash
+cd api/
+cp .env.example .env
+
+cd ../frontend/
+cp .env.example .env
+```
+
+Edit the `.env` file with your configuration
 
 ### Option 1: Single Command (Recommended) ⭐
 
@@ -64,16 +80,6 @@ cd frontend
 npm start
 ```
 
-## API
-**Environment Setup**
-   
-Copy the example environment file and configure your variables:
-```bash
-cp .env.example .env
-```
-
-Edit the `.env` file with your configuration
-
 ## 🔐 Authentication Flow
 
 ### Step-by-Step Guide to Create and Manage Products
@@ -102,15 +108,6 @@ The application uses JSON files for data persistence:
 - `data/users.json` - User information (passwords are encrypted)
 - `data/products.json` - Product catalog
 
-## FRONTEND
-**Environment Setup**
-   
-Copy the example environment file and configure your variables:
-```bash
-cp .env.example .env
-```
-
-Edit the `.env` file with your configuration
 
 ## Important URLs
 
