@@ -8,6 +8,12 @@
 
 ## Quick Start
 
+1. Clone the repository:
+
+```bash
+git clone https://github.com/faeralan/challenge_meli
+```
+
 ### Option 1: Single Command (Recommended) ⭐
 
 1. **Install all dependencies**:
@@ -144,35 +150,7 @@ npm test src/utils/__tests__/ -- --watchAll=false       # Utility tests only
 
 ```
 
-## Cache Operations
-
-### Automatic Caching
-- `GET /products` - Cached for 5 minutes
-- `GET /products/:id` - Cached for 10 minutes per product
-
-### Cache Invalidation
-- **Create Product**: Invalidates all products cache
-- **Update Product**: Invalidates specific product and all products cache
-- **Delete Product**: Invalidates specific product and all products cache
-
-## Testing Cache
-
-1. Start Redis server
-2. Start the API
-3. Make a GET request to `/products`
-4. Check logs for "Products retrieved from database"
-5. Make the same request again
-6. Check logs for "Products retrieved from cache"
-
-## Performance Benefits
-
-- **Reduced Database Load**: Frequent queries served from memory
-- **Faster Response Times**: Redis retrieval is significantly faster than JSON file reads
-- **Scalability**: Better handling of concurrent requests
-
-## Monitoring
-
-Monitor cache performance using Redis CLI:
+## Monitoring cache using Redis CLI
 
 ```bash
 redis-cli monitor
