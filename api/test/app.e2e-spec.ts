@@ -507,7 +507,7 @@ describe('API Endpoints (e2e)', () => {
           .expect(400)
           .expect(res => {
             expect(res.body.statusCode).toBe(400);
-            expect(res.body.message).toContain('al menos una imagen');
+            expect(res.body.message).toContain('at least one image');
           });
       });
 
@@ -571,7 +571,7 @@ describe('API Endpoints (e2e)', () => {
           .expect(400)
           .expect(res => {
             expect(res.body.statusCode).toBe(400);
-            expect(res.body.message).toContain('al menos una imagen');
+            expect(res.body.message).toContain('at least one image');
           });
       });
     });
