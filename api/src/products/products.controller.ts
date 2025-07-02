@@ -72,8 +72,6 @@ export class ProductsController {
     return this.productsService.getAvailablePaymentMethods();
   }
 
-
-
   @Get(':term')
   @ApiOperation({ summary: 'Get product detail by ID or slug' })
   @ApiResponse({ status: 200, description: 'Product detail', type: ProductDetailDto })
