@@ -1,6 +1,6 @@
 import React from 'react';
 import { meliColors } from './ProductDetail.styles';
-import { Warranty } from '../../types/warranty';
+import { Warranty } from '../../types';
 
 interface ProductPoliciesProps {
   warranty?: Warranty;
