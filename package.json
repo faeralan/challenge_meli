@@ -10,7 +10,7 @@
     "start:api": "cd api && npm run start:prod",
     "start:frontend": "cd frontend && npm run build && serve -s build -l 3001",
     "install:all": "npm install && cd api && npm install && cd ../frontend && npm install",
-    "test": "concurrently \"npm run test:api:e2e:cov\" \"npm run test:frontend\"",
+    "test": "concurrently \"npm run test:api\" \"npm run test:frontend\"",
     "test:api": "cd api && npm run test:e2e:cov",
     "test:api:cov": "cd api && npm run test:e2e:cov",
     "test:frontend": "cd frontend && npm test -- --coverage --watchAll=false",
